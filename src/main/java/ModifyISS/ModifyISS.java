@@ -477,7 +477,7 @@ public class ModifyISS {
 
     private static void setEnabledState(boolean enabled_state) {
     	ig_oops("Enabled state of stack size mod has been changed. This feature is.. unstable?");
-		ModifyISS.setEnabledState(enabled_state);		
+		ModifyISS.modify_stack_size_enabled = enabled_state;		
 	}
 
 	public static Map<String, Integer> getItemModifiers() {
