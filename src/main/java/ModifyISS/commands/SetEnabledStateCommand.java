@@ -13,7 +13,7 @@ import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 
 public class SetEnabledStateCommand extends ModularChatCommand {
 	public SetEnabledStateCommand() {
-		super("iss.enabled", "Sets the enabled state of the mod. Unstable feature.", PermissionLevel.OWNER, false, new CmdParameter[]{
+		super("stackresize.enabled", "Sets the enabled state of the mod. Unstable feature.", PermissionLevel.OWNER, false, new CmdParameter[]{
 				new CmdParameter("value", new BoolParameterHandler(true),false)
 		});
 	}

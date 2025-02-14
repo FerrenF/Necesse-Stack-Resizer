@@ -12,7 +12,7 @@ import necesse.engine.commands.parameterHandlers.IntParameterHandler;
 
 public class SetDefaultStackSizeModifierCommand extends ModularChatCommand {
     public SetDefaultStackSizeModifierCommand() {
-        super("iss.stacksize.setdefault", "Set the default stack size modifier for all affected items.", PermissionLevel.OWNER, false, new CmdParameter[]{
+        super("stackresize.stacksize.setdefault", "Set the default stack size modifier for all affected items.", PermissionLevel.OWNER, false, new CmdParameter[]{
                 new CmdParameter("stacksize", new IntParameterHandler(), false)
         });
     }

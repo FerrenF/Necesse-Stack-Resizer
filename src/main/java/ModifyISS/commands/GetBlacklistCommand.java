@@ -11,7 +11,7 @@ import necesse.engine.network.server.ServerClient;
 
 public class GetBlacklistCommand extends ModularChatCommand {
 	public GetBlacklistCommand() {
-		super("iss.blacklist", "Get the current blacklists.", PermissionLevel.USER, false,new CmdParameter[]{});
+		super("stackresize.blacklist", "Get the current blacklists.", PermissionLevel.USER, false,new CmdParameter[]{});
 	}
 
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,

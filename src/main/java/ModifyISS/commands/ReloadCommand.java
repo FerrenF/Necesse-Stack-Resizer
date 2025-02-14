@@ -13,7 +13,7 @@ import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 
 public class ReloadCommand extends ModularChatCommand {
 	public ReloadCommand() {
-		super("iss.reload", "Reloads the current blacklist and modified stack sizes from the mod's saved information.", PermissionLevel.OWNER, false, new CmdParameter[]{
+		super("stackresize.reload", "Reloads the current blacklist and modified stack sizes from the mod's saved information.", PermissionLevel.OWNER, false, new CmdParameter[]{
 				new CmdParameter("quiet", new BoolParameterHandler(false),true)
 		});
 	}

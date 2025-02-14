@@ -13,7 +13,7 @@ import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 
 public class SaveCommand extends ModularChatCommand {
 	public SaveCommand() {
-		super("iss.save", "Saves the current blacklist and modified stack sizes.", PermissionLevel.OWNER, false, new CmdParameter[]{
+		super("stackresize.save", "Saves the current blacklist and modified stack sizes.", PermissionLevel.OWNER, false, new CmdParameter[]{
 				new CmdParameter("quiet", new BoolParameterHandler(false),true)
 		});
 	}

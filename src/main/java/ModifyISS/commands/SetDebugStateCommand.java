@@ -13,7 +13,7 @@ import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 
 public class SetDebugStateCommand extends ModularChatCommand {
 	public SetDebugStateCommand() {
-		super("iss.debug", "Sets the debug state for the mod. Can create log spam.", PermissionLevel.OWNER, false, new CmdParameter[]{
+		super("stackresize.debug", "Sets the debug state for the mod. Can create log spam.", PermissionLevel.OWNER, false, new CmdParameter[]{
 				new CmdParameter("value", new BoolParameterHandler(false),false)
 		});
 	}

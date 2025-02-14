@@ -13,7 +13,7 @@ import necesse.engine.commands.parameterHandlers.StringParameterHandler;
 import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 public class GetStackSizeModifierCommand extends ModularChatCommand {
 	public GetStackSizeModifierCommand() {
-		super("iss.stacksize.get", "Get the stack size for an item.", PermissionLevel.USER, false, new CmdParameter[]{
+		super("stackresize.stacksize.get", "Get the stack size for an item.", PermissionLevel.USER, false, new CmdParameter[]{
 				new CmdParameter("item", new StringParameterHandler(),false),
 				new CmdParameter("is_class", new BoolParameterHandler(false),true),
 				new CmdParameter("quiet", new BoolParameterHandler(false),true)

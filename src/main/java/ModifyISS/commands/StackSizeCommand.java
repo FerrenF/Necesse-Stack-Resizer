@@ -11,7 +11,7 @@ import necesse.engine.network.server.ServerClient;
 
 public class StackSizeCommand extends ModularChatCommand {
 	public StackSizeCommand() {
-		super("iss.stacksize", "Return information about the current default stack size and modifier lists.", PermissionLevel.USER, false, new CmdParameter[]{
+		super("stackresize.stacksize", "Return information about the current default stack size and modifier lists.", PermissionLevel.USER, false, new CmdParameter[]{
 		});
 	}
 

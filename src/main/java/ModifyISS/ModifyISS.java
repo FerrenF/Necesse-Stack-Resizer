@@ -380,10 +380,12 @@ public class ModifyISS {
     
     // Get the save path based on the current server name
     public static String getServerSpecificSavePath() {
-        if (currentServer == null) return getSavePath(); // Default path if no server connected
-        return getSavePath(false) + "_" + currentServer.world.displayName + GlobalData.saveSuffix; // Append server name
+        if (getCurrentServer() == null) return getSavePath(); // Default path if no server connected
+        return getSavePath(false) + "_" + getCurrentServer().world.displayName + GlobalData.saveSuffix; // Append server name
     }
-    
+	public static String getServerSpecificSavePath(Server server) {
+		return getSavePath(false) + "_" + server.world.displayName + GlobalData.saveSuffix;
+	}
     // Save data only if the caller is the server or the owner
     public static void saveModData() {  
         if (getCurrentServer() == null || !clientIsOwnerAuth()) {
@@ -539,6 +541,8 @@ public class ModifyISS {
 	public static boolean getDebugState() {
 		return ModifyISS.modify_stack_size_enabled;
 	}
+
+
 
 	
 	

@@ -13,7 +13,7 @@ import necesse.engine.commands.parameterHandlers.StringParameterHandler;
 import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 public class AddBlacklistCommand extends ModularChatCommand {
 	public AddBlacklistCommand() {
-		super("iss.blacklist.add", "Add an item to the blacklist.", PermissionLevel.OWNER, false,new CmdParameter[]{
+		super("stackresize.blacklist.add", "Add an item to the blacklist.", PermissionLevel.OWNER, false,new CmdParameter[]{
 				new CmdParameter("item", new StringParameterHandler(),false),
 				new CmdParameter("is_class", new BoolParameterHandler(false),true),
 				new CmdParameter("quiet", new BoolParameterHandler(false),true)

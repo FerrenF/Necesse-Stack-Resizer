@@ -12,7 +12,7 @@ import necesse.engine.commands.parameterHandlers.StringParameterHandler;
 import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 public class RemoveStackSizeModifierCommand extends ModularChatCommand {
     public RemoveStackSizeModifierCommand() {
-        super("iss.stacksize.set", "Remove an item or (complete) class name from the blacklist.", PermissionLevel.OWNER, false, new CmdParameter[]{
+        super("stackresize.stacksize.set", "Remove an item or (complete) class name from the blacklist.", PermissionLevel.OWNER, false, new CmdParameter[]{
                 new CmdParameter("item", new StringParameterHandler(), false),               
                 new CmdParameter("is_class", new BoolParameterHandler(false), true),
                 new CmdParameter("quiet", new BoolParameterHandler(false), true),
