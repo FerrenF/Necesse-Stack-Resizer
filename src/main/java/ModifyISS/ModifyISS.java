@@ -3,11 +3,13 @@ package main.java.ModifyISS;
 import necesse.engine.GameLog;
 import necesse.engine.GlobalData;
 import necesse.engine.commands.CommandsManager;
+import necesse.engine.commands.ParsedCommand;
 import necesse.engine.commands.PermissionLevel;
 import necesse.engine.modLoader.LoadedMod;
 import necesse.engine.modLoader.annotations.ModEntry;
 import necesse.engine.network.client.Client;
 import necesse.engine.network.server.Server;
+import necesse.engine.network.server.ServerClient;
 import necesse.engine.network.server.ServerSettings;
 import necesse.engine.registries.ItemRegistry;
 import necesse.engine.save.LoadData;
@@ -58,8 +60,7 @@ public class ModifyISS {
     public void init() {
     	currentModInstance = LoadedMod.getRunningMod();  	
     	this.registerCommands();
-        oops("Increased Stack Size+ loaded.");    
-       
+        oops("Increased Stack Size+ loaded.");        
     }
     
     public void postInit() {
@@ -90,6 +91,19 @@ public class ModifyISS {
         Client c_c = getGameClient();
         return c_c.isSingleplayer() || ( (c_c.getPermissionLevel() == PermissionLevel.OWNER) || 
                (c_c.getPermissionLevel() == PermissionLevel.SERVER) );
+    }
+    
+    private static boolean setItemStackSizeExternally(Client client, Item item, int count) {
+    	if(client == null) return false;
+    	client.chat.addMessage(String.format("/stackresize.stacksize.set %s %d false true", item.getStringID(), count));
+    	return true;
+    }
+    
+    private static boolean setItemStackSizeExternallyWithCmdMgr(Client client, Item item, int count) {
+    	if(client == null) return false;
+    	String commandString = String.format("/stackresize.stacksize.set %s %d false true", item.getStringID(), count);
+    	ServerClient myServerClient = client.getLocalServer().getLocalServerClient();
+    	return client.commandsManager.runServerCommand(new ParsedCommand(commandString), myServerClient);
     }
     
     private static Server getCurrentServer() {
@@ -420,8 +434,59 @@ public class ModifyISS {
         oops("Saved mod data to " + targetSavePath);
     }
 
-   
+ // Load data only if the caller is the server or the owner
+    public static void loadModData(String path) {  
+        File saveFileIn = new File(path);        
 
+        LoadData s;
+        try {
+            s = LoadData.newRaw(saveFileIn, false);
+        } catch (IOException | DataFormatException e) {         
+            e.printStackTrace();
+            return;
+        }
+
+        
+        try {
+            int loadedClassModifiers = classModifierListFromString(s.getUnsafeString("classModifiers"));	
+            int loadedItemModifiers = itemModifierListFromString(s.getUnsafeString("itemModifiers"));	
+            int loadedClassBlacklist = classBlacklistFromString(s.getUnsafeString("classBlacklist"));			
+            int loadedItemBlacklist = itemBlacklistFromString(s.getUnsafeString("itemBlacklist"));			
+            int defaultStackSize = s.getInt("defaultStackSize");			         
+            boolean dbg_state = s.getBoolean("debugState");			
+            boolean enabled_state = s.getBoolean("enabledState");	
+            
+            // Do stuff with this
+
+        } catch (ClassNotFoundException e) {
+            dbg_oops(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    public static void saveModData(String path) {  
+         SaveData s = new SaveData("Stack Resizer");
+         
+         s.addUnsafeString("itemModifiers", itemModifierListToString());
+         s.addUnsafeString("classModifiers", classModifierListToString());
+         s.addUnsafeString("classBlacklist", classBlacklistToString());
+         s.addUnsafeString("itemBlacklist", itemBlacklistToString());
+         s.addInt("defaultStackSize", getDefaultStackSizeModifier());
+         s.addBoolean("debugState", debug_state);
+         s.addBoolean("enabledState", getEnabled());
+         
+         String targetSavePath = path;    	
+         File saveFileOut = new File(targetSavePath);         
+         if (saveFileOut.exists()) saveFileOut.delete();
+         
+         try {
+             s.saveScriptRaw(saveFileOut, false);
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+         oops("Saved mod data to " + targetSavePath);
+    }
+    
 	// Load data only if the caller is the server or the owner
     public static void loadModData() {    
         String loadedModName = currentModInstance.name;
