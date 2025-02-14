@@ -251,7 +251,7 @@ public class ModifyISS {
     
     public static int getStackSizeModification(Item item, int currentStackSize) {
     	
-        dbg_oops(item.getStringID() + " stacks to " + currentStackSize);        
+        dbg_oops(item.getStringID() + " now stacks to " + currentStackSize);        
         if (isInBlacklist(item)) {
             return currentStackSize;
         }               
