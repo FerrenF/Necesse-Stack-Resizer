@@ -19,12 +19,12 @@ These commands allow server administrators and external mods to adjust stack siz
 | Command                         | Description |
 |---------------------------------|-------------|
 | `iss.blacklist`                 | View the current blacklist. Anyone may use this command. |
-| `iss.blacklist.add <item/class> <is_class> <quiet>` | Add an item or class to the blacklist. |
-| `iss.blacklist.remove <item/class> <is_class> <quiet>` | Remove an item or class from the blacklist. |
-| `iss.stacksize.set <item/class> <value> <is_class> <quiet>` | Set a custom stack size modifier. |
+| `iss.blacklist.add <item/class> <is_class[true/false]> <quiet[true/false]>` | Add an item or class to the blacklist. |
+| `iss.blacklist.remove <item/class> <is_class[true/false]> <quiet[true/false]>` | Remove an item or class from the blacklist. |
+| `iss.stacksize.set <item/class> <value> <is_class[true/false]> <quiet[true/false]>` | Set a custom stack size modifier. |
 | `iss.stacksize.default <value>` | Set the default stack size modifier. |
-| `iss.stacksize.remove <item/class> <is_class> <quiet>` | Remove a custom stack size modifier. |
-| `iss.stacksize.get <item/class> <is_class> <quiet>` | Get the current stack size modifier for an item or class. Anyone may use this command. |
+| `iss.stacksize.remove <item/class> <is_class[true/false]> <quiet[true/false]>` | Remove a custom stack size modifier. |
+| `iss.stacksize.get <item/class> <is_class[true/false]> <quiet[true/false]>` | Get the current stack size modifier for an item or class. Anyone may use this command. |
 | `iss.stacksize` | List stack size information command. Anyone may use this command. |
 | `iss.save` | Save current settings to configuration. |
 | `iss.reload` | Reload the current settings from configuration. |
@@ -34,13 +34,13 @@ There are some unlisted commands that I can't recommend the regular use of.
 
 ## External Mod Integration  
 Other mods can interact with this mod by sending chat commands as if they were a player.  
-To prevent command spam from appearing in the chat log, all commands support a `quiet` parameter.  
+To prevent command spam from appearing in the chat log, **most** commands support a `quiet` parameter.  
 - Example:  
   ```
-  /iss.blacklist.add myCustomItem <quiet[true/false]>
-  /iss.blacklist.add necesse.inventory.item.miscItem.EnchantingScrollItem 1 <quiet[true/false]>
-  /iss.stacksize.set myItem 500 <quiet[true/false]>
-  /iss.stacksize.set necesse.inventory.item.miscItem.EnchantingScrollItem 1 <quiet[true/false]>
+  /iss.blacklist.add myCustomItem false <quiet[true/false]>
+  /iss.blacklist.add necesse.inventory.item.miscItem.EnchantingScrollItem true <quiet[true/false]>
+  /iss.stacksize.set myItem 500 false <quiet[true/false]>
+  /iss.stacksize.set necesse.inventory.item.miscItem.EnchantingScrollItem 1 true <quiet[true/false]>
   ```
 - When `quiet` is included and set to true, the command will execute without displaying output in the chat, keeping logs clean.  
 
