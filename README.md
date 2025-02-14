@@ -1,4 +1,5 @@
-# Stack Size Modifier Mod for Necesse  
+# Necesse Stack Resizer Mod
+## v0.1.0 Latest
 
 ## Shoutout  
 This mod is inspired by the original **Increased Stack Size** mod by [@dianchia](https://github.com/dianchia). However, it aims to be a more robust implementation with expanded features and greater flexibility.  
@@ -79,3 +80,6 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 ## Bugs
 - Contact me on discord @ferrenfx
 - Or, submit an issue here.
+
+## History
+- 02-14-2025 - v0.1.0 Initial Release
