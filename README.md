@@ -63,6 +63,7 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 - necesse.inventory.item.miscItem.GatewayTabletItem
 - necesse.inventory.item.miscItem.PotionBag
 - necesse.inventory.item.miscItem.PotionPouch
+- necesse.inventory.item.miscItem.VoidBagPouch
 
 ## Installation  
 1. Download the mod `.jar` file.  

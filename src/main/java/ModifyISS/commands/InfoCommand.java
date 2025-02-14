@@ -23,8 +23,8 @@ public class InfoCommand extends ModularChatCommand {
 		logs.add("Author: "+_i.author);
 		logs.add("Debug State:"+String.valueOf(ModifyISS.getDebugState()));
 		logs.add("ISS Enabled: "+String.valueOf(ModifyISS.getEnabled()));
-		if(client.getPermissionLevel() == PermissionLevel.OWNER || client.getPermissionLevel() == PermissionLevel.SERVER) {
-		logs.add("World settings at: "+ModifyISS.getServerSpecificSavePath(server));
+		if(client.isSingleplayer() || (client.getPermissionLevel() == PermissionLevel.OWNER || client.getPermissionLevel() == PermissionLevel.SERVER)) {
+			logs.add("World settings at: " + ModifyISS.getServerSpecificSavePath());
 		}
 		
 	}

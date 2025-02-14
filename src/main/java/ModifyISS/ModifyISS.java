@@ -88,8 +88,8 @@ public class ModifyISS {
     // Check if the current client is the owner or the server itself
     public static boolean clientIsOwnerAuth() {
         Client c_c = getGameClient();
-        return (c_c.getPermissionLevel() == PermissionLevel.OWNER) || 
-               (c_c.getPermissionLevel() == PermissionLevel.SERVER);
+        return c_c.isSingleplayer() || ( (c_c.getPermissionLevel() == PermissionLevel.OWNER) || 
+               (c_c.getPermissionLevel() == PermissionLevel.SERVER) );
     }
     
     private static Server getCurrentServer() {
@@ -108,6 +108,7 @@ public class ModifyISS {
     	classBlacklist.add(necesse.inventory.item.miscItem.GatewayTabletItem.class);
     	classBlacklist.add(necesse.inventory.item.miscItem.PotionBag.class);
     	classBlacklist.add(necesse.inventory.item.miscItem.PotionPouch.class); 
+    	classBlacklist.add(necesse.inventory.item.miscItem.VoidPouchItem.class); 
     	dbg_oops("Base blacklist items added.");
     }
     
