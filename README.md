@@ -134,15 +134,17 @@ Here are some boilerplate methods that might help show you how to do this:
 
         
         try {
-            String loadedClassModifiers = s.getUnsafeString("classModifiers");	
-            String loadedItemModifiers = itemModifierListFromString(s.getUnsafeString("itemModifiers"));	
-            String loadedClassBlacklist = classBlacklistFromString(s.getUnsafeString("classBlacklist"));			
-            String loadedItemBlacklist = itemBlacklistFromString(s.getUnsafeString("itemBlacklist"));			
-            int defaultStackSize = s.getInt("defaultStackSize");			         
-            boolean dbg_state = s.getBoolean("debugState");			
-            boolean enabled_state = s.getBoolean("enabledState");	
+            loadedClassModifiers = s.getUnsafeString("classModifiers");	
+            loadedItemModifiers = itemModifierListFromString(s.getUnsafeString("itemModifiers"));	
+            loadedClassBlacklist = classBlacklistFromString(s.getUnsafeString("classBlacklist"));			
+            loadedItemBlacklist = itemBlacklistFromString(s.getUnsafeString("itemBlacklist"));			
+           
+            defaultStackSize = s.getInt("defaultStackSize");			         
+            dbg_state = s.getBoolean("debugState");			
+            enabled_state = s.getBoolean("enabledState");	
             
-
+			// Assumes these are static fields in a class.
+			
         } catch (ClassNotFoundException e) {
             dbg_oops(e.getMessage());
             e.printStackTrace();
@@ -156,9 +158,9 @@ Here are some boilerplate methods that might help show you how to do this:
          s.addUnsafeString("classModifiers", classModifierListToString()); // Same here: classModifierListToString
          s.addUnsafeString("classBlacklist", classBlacklistToString());
          s.addUnsafeString("itemBlacklist", itemBlacklistToString());
-         s.addInt("defaultStackSize", getDefaultStackSizeModifier());
+         s.addInt("defaultStackSize", defaultStackSize);
          s.addBoolean("debugState", debug_state);
-         s.addBoolean("enabledState", getEnabled());
+         s.addBoolean("enabledState", enabled_state);
          
          String targetSavePath = path;    	
          File saveFileOut = new File(targetSavePath);         
