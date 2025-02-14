@@ -1,4 +1,6 @@
 # Necesse Stack Resizer Mod
+![Preview](./preview.png)  
+
 ## v0.1.0 Latest
 
 ## Shoutout  
