@@ -118,3 +118,4 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 - SetItemBlacklist: Bulk set item blacklist
 - SetClassBlacklist: Bulk set class blacklist
 - Multi-language locales
+- Removal of server specific debug state (There's no point!)
