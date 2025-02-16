@@ -1,7 +1,7 @@
 # Necesse Stack Resizer Mod
 ![Preview](./preview.png)  
 
-## v0.1.0 Latest
+## v0.2.0 Latest
 
 ## Shoutout  
 This mod is inspired by the original **Increased Stack Size** mod by [@dianchia](https://github.com/dianchia). However, it aims to be a more robust implementation with expanded features and greater flexibility.  
@@ -31,7 +31,8 @@ These commands allow server administrators and server-side mods to adjust stack 
 | `stackresize.save` | Save current settings to configuration. | "/stackresize.save" |
 | `stackresize.reload` | Reload the current settings from configuration. | "/stackresize.reload" |
 | `stackresize` | Display mod information. Anyone may use this command. | "/stackresize" |
-** denotes an optional parameter. These may or may not be present. <br/> "/stackresize.blacklist.add wormbait" 
+
+** denotes an optional parameter. These may or may not be present. For example: <br/> "/stackresize. blacklist.add wormbait" will perform the same action as "/stackresize. blacklist.add wormbait false true"
 
 There are some unlisted commands that I can't reccommend the regular use of.
 ## External Mod Integration  
@@ -107,3 +108,9 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 ## History
 - 02-15-2025 - v0.2.0 Major Refactor
 - 02-14-2025 - v0.1.0 Initial Release
+
+# Future
+- SetItemStacksizeModifiers: Bulk set item modifiers.
+- SetClassStacksizeModifiers: Bulk set class modifiers.
+- SetItemBlacklist: Bulk set item blacklist.
+- SetClassBlacklist: Bulk set class blacklist
