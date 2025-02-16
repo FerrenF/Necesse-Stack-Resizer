@@ -21,7 +21,7 @@ public class ReloadCommand extends ModularChatCommand {
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
 			CommandLog logs) {				
 		if(!(boolean)args[0]) logs.add("Loading ISS information...");
-		ModifyISS.loadModData();
+		ModifyISS.reloadSettings();
 		logs.add("Completed.");
 	}
 }

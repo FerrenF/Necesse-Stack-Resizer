@@ -19,8 +19,8 @@ public class StackSizeCommand extends ModularChatCommand {
 			CommandLog logs) {	
 			int c_s = ModifyISS.getDefaultStackSizeModifier();	
 			logs.add("Default stack size: "+c_s);
-			logs.add("Class modifiers: "+ModifyISS.classModifierListToString());
-			logs.add("Item modifiers: "+ModifyISS.itemModifierListToString());
+			logs.add("Class modifiers: "+ModifyISS.getCurrentSettings().classModifierListToString());
+			logs.add("Item modifiers: "+ModifyISS.getCurrentSettings().itemModifierListToString());
 	
 	}
 }

@@ -21,10 +21,10 @@ public class InfoCommand extends ModularChatCommand {
 		LoadedMod _i = ModifyISS.getCurrentModInstance();
 		logs.add(_i.getModNameString());
 		logs.add("Author: "+_i.author);
-		logs.add("Debug State:"+String.valueOf(ModifyISS.getDebugState()));
-		logs.add("ISS Enabled: "+String.valueOf(ModifyISS.getEnabled()));
+		logs.add("Debug State:" + String.valueOf(ModifyISS.getDebugState()));
+		logs.add("ISS Enabled: " + String.valueOf(ModifyISS.getEnabled()));
 		if(client == null || (client.getPermissionLevel() == PermissionLevel.OWNER || client.getPermissionLevel() == PermissionLevel.SERVER)) {
-			logs.add("World settings at: " + ModifyISS.getServerSpecificSavePath());
+			logs.add("World settings at: " + ModifyISS.getCurrentSettings().savePath());
 		}
 		
 	}

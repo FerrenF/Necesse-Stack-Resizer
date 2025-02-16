@@ -18,7 +18,7 @@ public class GetBlacklistCommand extends ModularChatCommand {
 			CommandLog logs) {
 		
 		logs.add("Current blacklists:");
-		logs.add("CLASS: "+ModifyISS.getClassBlacklistString());
-		logs.add("ITEM: "+ModifyISS.getItemBlacklistString());
+		logs.add("CLASS: "+ModifyISS.getCurrentSettings().classBlacklistToString());
+		logs.add("ITEM: "+ModifyISS.getCurrentSettings().itemBlacklistToString());
 	}
 }
