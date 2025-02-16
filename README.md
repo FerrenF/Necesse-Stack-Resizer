@@ -97,9 +97,12 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 - This mod is both **server-side and client-side**. Server and client must both have this mod.
 - Compatible with most other mods that modify stack sizes, as long as they do not override the same configuration settings.  
 
-## What happens if..
-- I change the default stack size while items are stacked to over the new amount?
+## FAQ
+- What happens if I change the default stack size while items are stacked to over the new amount?
 -- Nothing, until you try to take an item from the stack or split it. Then it'll kick in.
+
+- ModifyISS...? Isn't this Stack Resizer
+-- This project evolved from a mod designed to alter another mod (being increased stack size, hence ModifyISS) to being an entire standalone mod itself. The class name will eventually change, as well as some of the ingame messages.
 
 ## Bugs
 - Contact me on discord @ferrenfx
@@ -110,7 +113,8 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 - 02-14-2025 - v0.1.0 Initial Release
 
 # Future
-- SetItemStacksizeModifiers: Bulk set item modifiers.
-- SetClassStacksizeModifiers: Bulk set class modifiers.
-- SetItemBlacklist: Bulk set item blacklist.
+- SetItemStacksizeModifiers: Bulk set item modifiers
+- SetClassStacksizeModifiers: Bulk set class modifiers
+- SetItemBlacklist: Bulk set item blacklist
 - SetClassBlacklist: Bulk set class blacklist
+- Multi-language locales
