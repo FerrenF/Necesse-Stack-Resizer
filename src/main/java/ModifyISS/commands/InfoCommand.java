@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -18,13 +18,13 @@ public class InfoCommand extends ModularChatCommand {
 
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
 			CommandLog logs) {		
-		LoadedMod _i = ModifyISS.getCurrentModInstance();
+		LoadedMod _i = StackResizer.getCurrentModInstance();
 		logs.add(_i.getModNameString());
 		logs.add("Author: "+_i.author);
-		logs.add("Debug State:" + String.valueOf(ModifyISS.getDebugState()));
-		logs.add("ISS Enabled: " + String.valueOf(ModifyISS.getEnabled()));
+		logs.add("Debug State:" + String.valueOf(StackResizer.getDebugState()));
+		logs.add("ISS Enabled: " + String.valueOf(StackResizer.getEnabled()));
 		if(client == null || (client.getPermissionLevel() == PermissionLevel.OWNER || client.getPermissionLevel() == PermissionLevel.SERVER)) {
-			logs.add("World settings at: " + ModifyISS.getCurrentSettings().savePath());
+			logs.add("World settings at: " + StackResizer.getCurrentSettings().savePath());
 		}
 		
 	}

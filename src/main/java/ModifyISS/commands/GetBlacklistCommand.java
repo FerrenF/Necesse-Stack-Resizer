@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -18,7 +18,7 @@ public class GetBlacklistCommand extends ModularChatCommand {
 			CommandLog logs) {
 		
 		logs.add("Current blacklists:");
-		logs.add("CLASS: "+ModifyISS.getCurrentSettings().classBlacklistToString());
-		logs.add("ITEM: "+ModifyISS.getCurrentSettings().itemBlacklistToString());
+		logs.add("CLASS: "+StackResizer.getCurrentSettings().classBlacklistToString());
+		logs.add("ITEM: "+StackResizer.getCurrentSettings().itemBlacklistToString());
 	}
 }

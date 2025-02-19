@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -25,7 +25,7 @@ public class RemoveStackSizeModifierCommand extends ModularChatCommand {
         boolean is_class = (boolean)args[1];
         boolean quiet = (boolean)args[2];
         
-        int success = is_class ? ModifyISS.removeClassStackSizeModifier(item) : ModifyISS.removeItemStackSizeModifier(item);
+        int success = is_class ? StackResizer.removeClassStackSizeModifier(item) : StackResizer.removeItemStackSizeModifier(item);
         if(quiet) return;        
         String resultType = is_class ? "class name" : "item name";
         switch(success) {

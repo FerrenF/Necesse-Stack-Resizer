@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -24,7 +24,7 @@ public class SetDefaultStackSizeModifierCommand extends ModularChatCommand {
         int stackSize = (int) args[0];
         boolean quiet = (boolean) args[1];
         
-        ModifyISS.setDefaultStackSizeModifier(stackSize);
+        StackResizer.setDefaultStackSizeModifier(stackSize);
         if(quiet) return;
         
         logs.add("Set default stack size modifier to " + stackSize + " for all affected items.");

@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -22,8 +22,8 @@ public class RemoveBlacklistCommand extends ModularChatCommand {
 
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
 			CommandLog logs) {			
-		int result = (boolean)args[2] ? ModifyISS.removeClassFromBlacklist((String)args[0]) :
-			ModifyISS.removeItemFromBlacklist((String)args[0]);
+		int result = (boolean)args[2] ? StackResizer.removeClassFromBlacklist((String)args[0]) :
+			StackResizer.removeItemFromBlacklist((String)args[0]);
 		
 		String resultType = (boolean)args[2] ? "class name" : "item string ID";
 		if (result > 0){

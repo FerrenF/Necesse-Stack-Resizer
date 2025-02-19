@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -46,13 +46,13 @@ public class TestExternalCommand extends ModularChatCommand {
     public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
                             CommandLog logs) {
     	
-      	ModifyISS.ig_oops("Testing command manager access. Target: craftingguide, new stack size 5.");
+      	StackResizer.ig_oops("Testing command manager access. Target: craftingguide, new stack size 5.");
         this.setItemStackSizeExternallyWithCmdMgr(server.getLocalClient(), "craftingguide", 5, false, false);
         
-        ModifyISS.ig_oops("Attempting to print new lists to chat.");
+        StackResizer.ig_oops("Attempting to print new lists to chat.");
         this.getStackSizesExternally(server.getLocalClient());
         
-        ModifyISS.ig_oops("Attempting to save new list.");
+        StackResizer.ig_oops("Attempting to save new list.");
         this.saveStackSizesExternally(server.getLocalClient(), false);
     }
 }

@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -25,7 +25,7 @@ public class SetEnabledStateCommand extends ModularChatCommand {
 		boolean quiet = (boolean) args[1];
 		
 		
-		ModifyISS.setEnabled(result_state);	
+		StackResizer.setEnabled(result_state);	
 		
 		if(quiet) return;
 		logs.add(result_state ? "Enabled state is true." : "Enabled state is false.");

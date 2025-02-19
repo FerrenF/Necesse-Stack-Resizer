@@ -1,6 +1,6 @@
 package main.java.ModifyISS.commands;
 
-import main.java.ModifyISS.ModifyISS;
+import main.java.ModifyISS.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -21,6 +21,6 @@ public class SaveCommand extends ModularChatCommand {
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
 			CommandLog logs) {				
 		if(!(boolean)args[0]) logs.add("Saving ISS information.");
-		ModifyISS.saveModData();	
+		StackResizer.saveModData();	
 	}
 }

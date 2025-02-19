@@ -1,7 +1,7 @@
 # Necesse Stack Resizer Mod
 ![Preview](./preview.png)  
 
-## v0.2.0 Latest
+## v0.3.0 Latest
 
 ## Shoutout  
 This mod is inspired by the original **Increased Stack Size** mod by [@dianchia](https://github.com/dianchia). However, it aims to be a more robust implementation with expanded features and greater flexibility.  
@@ -23,7 +23,9 @@ These commands allow server administrators and server-side mods to adjust stack 
 | `stackresize.blacklist`                 | View the current blacklist. Anyone may use this command. | "/stackresize.blacklist" |
 | `stackresize.blacklist.add <item/class> <is_class[true/false]>** <quiet[true/false]>**` | Add an item or class to the blacklist. | "/stackresize.blacklist.add wormbait false false" <br/> "/stackresize.blacklist.add necesse.inventory.item.miscItem.Lunchbox true false"|
 | `stackresize.blacklist.remove <item/class> <is_class[true/false]>** <quiet[true/false]>**` | Remove an item or class from the blacklist. | "/stackresize.blacklist.remove wormbait false false" <br/> "/stackresize.blacklist.remove necesse.inventory.item.miscItem.Lunchbox true false" |
+| `stackresize.blacklist.addall <formatted_string>*** <is_class[true/false]>** <quiet[true/false]>**` | Add a list of items or classes to the blacklist. They must all be of one type, item or class. | See Below for Examples |
 | `stackresize.stacksize.set <item/class> <value> <is_class[true/false]>** <quiet[true/false]>**` | Set a custom stack size modifier. | "/stackresize.stacksize.set wormbait 100 false false" <br/> "/stackresize.stacksize.set necesse.inventory.item.miscItem.Lunchbox 1 true false" |
+| `stackresize.stacksize.setall <formatted_string>*** <is_class[true/false]>** <quiet[true/false]>**` | Bulk set class or item mofidiers from a formatted string. | See Below for Examples |
 | `stackresize.stacksize.remove <item/class> <is_class[true/false]>** <quiet[true/false]>**` | Remove a custom stack size modifier. | "/stackresize.stacksize.remove wormbait 100 false false" <br/> "/stackresize.stacksize.remove necesse.inventory.item.miscItem.Lunchbox 1 true false" |
 | `stackresize.stacksize.default <value>` | Set the default stack size modifier. | "/stackresize.stacksize.default 5000" |
 | `stackresize.stacksize.get <item/class> <is_class[true/false]>** <quiet[true/false]>**` | Get the current stack size modifier for an item or class. Anyone may use this command. | "/stackresize.stacksize.get wormbait false" <br/> "/stackresize.stacksize.get necesse.inventory.item.miscItem.Lunchbox false" |
@@ -34,10 +36,37 @@ These commands allow server administrators and server-side mods to adjust stack 
 
 ** denotes an optional parameter. These may or may not be present. For example: <br/> "/stackresize. blacklist.add wormbait" will perform the same action as "/stackresize. blacklist.add wormbait false true"
 
-There are some unlisted commands that I can't reccommend the regular use of.
+*** denotes a formatted string. The commands that use these strings require that they be formatted in a particular manner:
+
+Command: stackresize.blacklist.addall
+Format: "item;item;item;" "class;class;class;" 
+Example: /stackresize.blacklist.addall wormbait;craftingguide;someotheritem;
+		 /stackresize.blacklist.addall necesse.inventory.item.mountItem.MountItem;necesse.inventory.item.trinketItem.TrinketItem;necesse.inventory.item.miscItem.AmmoBag;
+		 
+Command: stackresize.stacksize.setall
+Format: "item=stacksize;item=stacksize;item=stacksize;" "class=stacksize;class=stacksize;class=stacksize;"
+Example /stackresize.stacksize.setall wormbait=100;craftingguide=1;somethingelse=9999;
+		/stackresize.stacksize.setall necesse.inventory.item.mountItem.MountItem=1;necesse.inventory.item.trinketItem.TrinketItem=10;necesse.inventory.item.miscItem.AmmoBag=999;
+
+
+There are some unlisted commands that are for testing purposes.
+
 ## External Mod Integration  
 There are three ways to interact with this mod from another mod:
 	
+### Static Class Fields
+
+When Stack Resizer modifies a stack size, it will first check the class of the item for the presence of a few fields:
+
+public static final boolean SR_NO_MODIFY = true;
+Classes that contain this field, regardless of the value of the field, will be ignored by Stack Resizer.
+
+public static final int SR_MODIFY = 1000;
+Classes that contain this field will have their stack sizes modified to the amount specified.
+
+The fields must have public visibility and also be static in order to function.
+
+
 ### Using CommandManager
 
 These examples can be seen running in the /stackresize.tests.external command! The script for this example and similar ones are in the 'TestExternalCommand.java' file in the root directory of this repository.
@@ -109,13 +138,10 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 - Or, submit an issue here.
 
 ## History
+- 02-19-2025 - v0.3.0 Added static field checks, added bulk set commands.
 - 02-15-2025 - v0.2.0 Major Refactor
 - 02-14-2025 - v0.1.0 Initial Release
 
 # Future
-- SetItemStacksizeModifiers: Bulk set item modifiers
-- SetClassStacksizeModifiers: Bulk set class modifiers
-- SetItemBlacklist: Bulk set item blacklist
-- SetClassBlacklist: Bulk set class blacklist
 - Multi-language locales
 - Removal of server specific debug state (There's no point!)

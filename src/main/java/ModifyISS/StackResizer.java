@@ -17,6 +17,8 @@ import necesse.engine.state.MainMenu;
 import necesse.engine.state.State;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.zip.DataFormatException;
 
@@ -24,7 +26,7 @@ import main.java.ModifyISS.commands.*;
 import necesse.inventory.item.Item;
 
 @ModEntry
-public class ModifyISS {
+public class StackResizer {
 	
 	private static final Class<?>[] BASE_CLASS_BLACKLIST = {
 		    necesse.inventory.item.mountItem.MountItem.class,
@@ -74,7 +76,7 @@ public class ModifyISS {
     
     public static void serverConnectEvent(Server server, ServerSettings hostSettings) {
     	dbg_oops("Server start event triggered.");
-    	ModifyISS.currentServer = server;	
+    	StackResizer.currentServer = server;	
     	
     	try {
 			currentSettings = SRSettings.fromWorldName(server.world.displayName);
@@ -98,7 +100,7 @@ public class ModifyISS {
     
     public static void serverSaveEvent(Server server) {
     	dbg_oops("Server save event triggered.");
-    	ModifyISS.currentServer = server;
+    	StackResizer.currentServer = server;
     	dbg_oops("Saving mod settings at "+getCurrentSettings().savePath());
 		try {
 			getCurrentSettings().save();
@@ -122,7 +124,7 @@ public class ModifyISS {
     
     
     private static Server getCurrentServer() {
-    	return ModifyISS.currentServer;
+    	return StackResizer.currentServer;
     }
     
     public static void ensureBaseBlacklist() {    	
@@ -136,8 +138,10 @@ public class ModifyISS {
     public void registerCommands() {
         CommandsManager.registerServerCommand(new GetBlacklistCommand());
         CommandsManager.registerServerCommand(new AddBlacklistCommand());
+        CommandsManager.registerServerCommand(new AddAllBlacklistCommand());
         CommandsManager.registerServerCommand(new RemoveBlacklistCommand());
         CommandsManager.registerServerCommand(new SetStackSizeModifierCommand());
+        CommandsManager.registerServerCommand(new SetStackSizesCommand());
         CommandsManager.registerServerCommand(new SetDefaultStackSizeModifierCommand());
         CommandsManager.registerServerCommand(new SaveCommand());
         CommandsManager.registerServerCommand(new RemoveStackSizeModifierCommand());
@@ -245,9 +249,29 @@ public class ModifyISS {
     	getCurrentSettings().default_stackSize_modifier = Math.abs(stackSize);
     }
     
-    public static int getStackSizeModification(Item item, int currentStackSize) {
+    public static int getStackSizeModification(Item item, int currentStackSize) {     
     	
-        dbg_oops(item.getStringID() + " now stacks to " + currentStackSize);        
+    	// Check if item class has a field named "SR_NO_MODIFY".
+        try {
+            Field field = item.getClass().getDeclaredField("SR_NO_MODIFY");
+            if (field != null) {
+                return currentStackSize; // Treat as blacklisted if it does.
+            }
+        } catch (NoSuchFieldException e) {
+        	// Do nothing.
+        }
+        
+        // Check if item class has a field named "SR_MODIFY" and use its value as the new stackSize if it exists.
+        try {
+            Field modifyField = item.getClass().getDeclaredField("SR_MODIFY");
+            if (Modifier.isStatic(modifyField.getModifiers()) && Modifier.isFinal(modifyField.getModifiers()) 
+                && modifyField.getType() == int.class) {
+                return modifyField.getInt(null); // Because the field SHOULD be static, we can use null as the parameter here.
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            // Field not found or not accessible.
+        }        
+        
         if (isInBlacklist(item)) {
             return currentStackSize;
         }               
@@ -342,11 +366,35 @@ public class ModifyISS {
 
 	public static SRSettings getCurrentSettings() {
 		if(currentSettings==null) currentSettings = SRSettings.getDefaultSettings(getCurrentWorld());
-		return ModifyISS.currentSettings;
+		return StackResizer.currentSettings;
 	}
 
 	public static void setEnabled(boolean result_state) {
 		currentSettings.modify_stackSize_enabled = result_state;		
+	}
+
+	public static int setClassStackSizeModifiersFromString(String formattedstring) {
+		Map<Class<?>, Integer> newAdditions = SRSettings.classModifierListFromString(formattedstring);
+		currentSettings.classModifiers.putAll(newAdditions);
+		return newAdditions.size();
+	} 
+
+	public static int setItemStackSizeModifiersFromString(String formattedstring) {
+		Map<String, Integer> newAdditions = SRSettings.itemModifierListFromString(formattedstring);
+		currentSettings.itemModifiers.putAll(newAdditions);
+		return newAdditions.size();
+	}
+
+	public static int setBlacklistClassesFromString(String formattedstring) {
+		Set<Class<?>> newAdditions = SRSettings.classBlacklistFromString(formattedstring);
+		currentSettings.classBlacklist.addAll(newAdditions);
+		return newAdditions.size();
+	}
+
+	public static int setBlacklistItemsFromString(String formattedstring) {
+		Set<String> newAdditions = SRSettings.itemBlacklistFromString(formattedstring);
+		currentSettings.itemBlacklist.addAll(newAdditions);
+		return newAdditions.size();
 	}
 
 	
