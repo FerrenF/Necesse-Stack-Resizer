@@ -14,7 +14,7 @@ import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 public class SetStackSizesCommand extends ModularChatCommand {
     public SetStackSizesCommand() {
         super("stackresize.stacksize.setall", "Bulk set stack sizes. They must all be either items or classnames. Format: item=stacksize;item=stacksize;", PermissionLevel.OWNER, false, new CmdParameter[]{
-                new CmdParameter("formattedstring", new StringParameterHandler(), false),
+                new CmdParameter("formatted_string", new StringParameterHandler(), false),
                 new CmdParameter("is_class", new BoolParameterHandler(false), true),
                 new CmdParameter("quiet", new BoolParameterHandler(false), true),
         });
@@ -30,7 +30,7 @@ public class SetStackSizesCommand extends ModularChatCommand {
         if(quiet) return;
         
         String resultType = is_class ? "class names" : "item names";
-        if (success == 1) {
+        if (success > 0) {
         	logs.add(String.format("Set stack size modifier for %d %s. Use /stackresize.stacksize to see changes.", success, resultType));
         			
         } else {

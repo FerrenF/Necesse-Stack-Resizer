@@ -14,7 +14,7 @@ import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 public class AddAllBlacklistCommand extends ModularChatCommand {
     public AddAllBlacklistCommand() {
         super("stackresize.blacklist.addall", "Bulk set blacklist items. They must all be either items or classnames. Format: item;item;", PermissionLevel.OWNER, false, new CmdParameter[]{
-                new CmdParameter("formattedstring", new StringParameterHandler(), false),
+                new CmdParameter("formatted_string", new StringParameterHandler(), false),
                 new CmdParameter("is_class", new BoolParameterHandler(false), true),
                 new CmdParameter("quiet", new BoolParameterHandler(false), true),
         });
@@ -30,7 +30,7 @@ public class AddAllBlacklistCommand extends ModularChatCommand {
         if(quiet) return;
         
         String resultType = is_class ? "class names" : "item names";
-        if (success == 1) {
+        if (success > 0) {
         	logs.add(String.format("Added %d %s to blacklist. Use /stackresize.blacklist to see changes.", success, resultType));
         			
         } else {
