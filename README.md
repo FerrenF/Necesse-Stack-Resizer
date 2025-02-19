@@ -38,15 +38,17 @@ These commands allow server administrators and server-side mods to adjust stack 
 
 *** denotes a formatted string. The commands that use these strings require that they be formatted in a particular manner:
 
-Command: stackresize.blacklist.addall
-Format: "item;item;item;" "class;class;class;" 
-Example: /stackresize.blacklist.addall wormbait;craftingguide;someotheritem;
-		 /stackresize.blacklist.addall necesse.inventory.item.mountItem.MountItem;necesse.inventory.item.trinketItem.TrinketItem;necesse.inventory.item.miscItem.AmmoBag;
+- Command: stackresize.blacklist.addall
+  - Format: "item;item;item;" "class;class;class;" 
+  - Examples: 
+      - ```/stackresize.blacklist.addall wormbait;craftingguide;someotheritem;```<br/>
+      - ```/stackresize.blacklist.addall necesse.inventory.item.mountItem.MountItem;necesse.inventory.item.trinketItem.TrinketItem;necesse.inventory.item.miscItem.AmmoBag;```
 		 
-Command: stackresize.stacksize.setall
-Format: "item=stacksize;item=stacksize;item=stacksize;" "class=stacksize;class=stacksize;class=stacksize;"
-Example /stackresize.stacksize.setall wormbait=100;craftingguide=1;somethingelse=9999;
-		/stackresize.stacksize.setall necesse.inventory.item.mountItem.MountItem=1;necesse.inventory.item.trinketItem.TrinketItem=10;necesse.inventory.item.miscItem.AmmoBag=999;
+- Command: stackresize.stacksize.setall
+  - Format: "item=stacksize;item=stacksize;item=stacksize;" "class=stacksize;class=stacksize;class=stacksize;"
+  - Examples:
+    -	```/stackresize.stacksize.setall wormbait=100;craftingguide=1;somethingelse=9999;```
+	-	```/stackresize.stacksize.setall necesse.inventory.item.mountItem.MountItem=1;necesse.inventory.item.trinketItem.TrinketItem=10;necesse.inventory.item.miscItem.AmmoBag=999;```
 
 
 There are some unlisted commands that are for testing purposes.
@@ -58,10 +60,10 @@ There are three ways to interact with this mod from another mod:
 
 When Stack Resizer modifies a stack size, it will first check the class of the item for the presence of a few fields:
 
-public static final boolean SR_NO_MODIFY = true;
+```public static final boolean SR_NO_MODIFY = true;```<br/>
 Classes that contain this field, regardless of the value of the field, will be ignored by Stack Resizer.
 
-public static final int SR_MODIFY = 1000;
+```public static final int SR_MODIFY = 1000;```<br/>
 Classes that contain this field will have their stack sizes modified to the amount specified.
 
 The fields must have public visibility and also be static in order to function.
@@ -97,7 +99,9 @@ There are a few ways to do run a command directly through the server client's Co
 
 ### Editing the configuration externally.
 
-This mod stores it's configuration information in the game's default settings path at %APPDATA%/Necesse/cfg/mods (on windows) using the game's built-in LoadData and SaveData classes. The path where this config file may differ on a unix server. In the root directory of this repository is a java file called 'SRSettings.java' which contains a standalone class (SRSettings) that you can add to your project to help manipulate the settings that this mod uses. 
+This mod stores it's configuration information in the game's default settings path at %APPDATA%/Necesse/cfg/mods (on windows) using the game's built-in LoadData and SaveData classes. 
+
+The path where this config file may differ on a unix server. In the root directory of this repository is a java file called 'SRSettings.java' which contains a standalone class (SRSettings) that you can add to your project to help manipulate the settings that this mod uses. 
 
 If the file is edited before Stack Resizer loads, then the changes will be loaded automatically. If the settings are edited after Stack Resizer loads it's settings (On server start event, after a world is selected and initialized), then you can use the CommandManager to use the in-game reload command to reload the contents of the settings file dynamically.
 
