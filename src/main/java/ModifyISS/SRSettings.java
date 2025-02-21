@@ -19,6 +19,7 @@ import necesse.engine.save.SaveData;
 
 public class SRSettings{
     	
+		public static boolean DEFAULT_DEBUG_STATE = false;
     	public Set<String> itemBlacklist;
     	public Set<Class<?>> classBlacklist;
     	public Map<Class<?>, Integer> classModifiers;
@@ -31,8 +32,10 @@ public class SRSettings{
         private String world_name;
         public static final int default_default_stackSize_modifier = 5000;
         public static final String SRModName = "Stack Resizer";
+        
         private SRSettings(String _world_name, Set<String> _itemBlacklist, Set<Class<?>> _classBlacklist, Map<Class<?>, Integer> _classModifiers, Map<String, Integer> _itemModifiers,
         		int _default_stackSize_modifier, boolean _debug_state, boolean _modify_stackSize_enabled) {
+        	
         	this.world_name = _world_name;
         	this.itemBlacklist = _itemBlacklist;
         	this.classBlacklist = _classBlacklist;
@@ -40,16 +43,17 @@ public class SRSettings{
         	this.itemModifiers = _itemModifiers;
         	this.debug_state = _debug_state;
         	this.default_stackSize_modifier = _default_stackSize_modifier;
-        	this.modify_stackSize_enabled = _modify_stackSize_enabled;        	
+        	this.modify_stackSize_enabled = _modify_stackSize_enabled;        
+        	
         }
         
         public String getWorldName() {
-        	return new String(this.world_name);
+        	return this.world_name;
         }
         
-        public static SRSettings fromWorldName(String world_name) throws IOException, DataFormatException {
+        public static SRSettings fromWorldName(String _world_name) throws IOException, DataFormatException {
         	
-            String targetSavePath = getWorldSpecificSavePath(world_name);
+            String targetSavePath = getWorldSpecificSavePath(_world_name);
             
             File saveFileIn = new File(targetSavePath);        
             if (!saveFileIn.exists()) return null;
@@ -63,7 +67,8 @@ public class SRSettings{
             int n_defaultStackSize = s.getInt("defaultStackSize");
             boolean n_debug_state = s.getBoolean("debugState");
             boolean n_enabled_state = s.getBoolean("enabledState");
-            return new SRSettings(world_name, n_itemBlacklist, n_classBlacklist, n_classModifiers, n_itemModifiers, n_defaultStackSize, n_debug_state, n_enabled_state);
+            
+            return new SRSettings(_world_name, n_itemBlacklist, n_classBlacklist, n_classModifiers, n_itemModifiers, n_defaultStackSize, n_debug_state, n_enabled_state);
           
         }
         
@@ -89,7 +94,7 @@ public class SRSettings{
         }
         
         public static SRSettings getDefaultSettings(String world_name) {
-        	return new SRSettings(world_name, new HashSet<String>(), new HashSet<Class<?>>(), new HashMap<Class<?>, Integer>(), new HashMap<String,Integer>(), default_default_stackSize_modifier, false, true);
+        	return new SRSettings(world_name, new HashSet<String>(), new HashSet<Class<?>>(), new HashMap<Class<?>, Integer>(), new HashMap<String,Integer>(), default_default_stackSize_modifier, DEFAULT_DEBUG_STATE, true);
         }
         
         public static SRSettings fromCurrentWorld(Client client) throws ClientNotInitializedException, WorldNotInitializedException, IOException, DataFormatException{        	
@@ -97,7 +102,7 @@ public class SRSettings{
         	if(client.worldEntity == null) throw new WorldNotInitializedException();        	
         	return fromWorldName(client.worldEntity.serverWorld.displayName);
         }
-        
+                
         // Save data only if the calling client is the server or the owner
         public void save() throws IOException {      	
             SaveData s = new SaveData(SRSettings.SRModName);            
@@ -112,7 +117,7 @@ public class SRSettings{
             s.addBoolean("debugState", this.debug_state);
             s.addBoolean("enabledState", this.modify_stackSize_enabled);
             
-            String targetSavePath = getWorldSpecificSavePath(this.world_name);    	
+            String targetSavePath = getWorldSpecificSavePath(this.getWorldName());    	
             File saveFileOut = new File(targetSavePath);        
             if (saveFileOut.exists()) saveFileOut.delete();
             
@@ -206,31 +211,22 @@ public class SRSettings{
 		}
 		
 	    public static String getSavePath() {
-	    	String appDataCfgPath = GlobalData.cfgPath();
-	    	return appDataCfgPath+"mods/" + SRSettings.SRModName;   
+	    	String appDataCfgPath = GlobalData.cfgPath().replace('\\', '/');
+	    	return appDataCfgPath + "mods/" + SRSettings.SRModName;   
 	    }
 	    
 	    public String savePath() {
-			return getSavePath(false) + "_" + this.world_name + GlobalData.saveSuffix;
-		}
+			return getSavePath() + "_" + this.world_name + GlobalData.saveSuffix;
+		}	    
 	    
-	    public static String getSavePath(boolean suffix) {
-	    	return suffix ? getSavePath() + GlobalData.saveSuffix : getSavePath();
-	    }
-	    
-	    public static String getWorldSpecificSavePath(String world_name) {
-			return getSavePath(false) + "_" + world_name + GlobalData.saveSuffix;
+	    public static String getWorldSpecificSavePath(String _world_name) {
+			return getSavePath() + "_" + _world_name + GlobalData.saveSuffix;
 		}
 	    
 		public static String getServerSpecificSavePath(Server server) {
 			return getWorldSpecificSavePath(server.world.displayName);
 		}
-		
-		public static String getServerSpecificSavePath(Client client) {
-	        if (client.getLocalServer() == null) return getSavePath(); // Default path if no server connected
-	        return getServerSpecificSavePath(client.getLocalServer());
-	    }
-		
+				
 		public String classBlacklistToString() {
 			return classBlacklistToString(this.classBlacklist);
 		}

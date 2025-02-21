@@ -15,6 +15,7 @@ import necesse.engine.registries.ItemRegistry;
 import necesse.engine.state.MainGame;
 import necesse.engine.state.MainMenu;
 import necesse.engine.state.State;
+import necesse.engine.world.World;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -74,17 +75,23 @@ public class StackResizer {
     	
     }
     
-    public static void serverConnectEvent(Server server, ServerSettings hostSettings) {
-    	dbg_oops("Server start event triggered.");
-    	StackResizer.currentServer = server;	
+    public static void worldStartEvent(World world) {
+    	dbg_oops("World start event triggered.");
+    	StackResizer.currentServer = world.server;	
     	
-    	try {
-			currentSettings = SRSettings.fromWorldName(server.world.displayName);
-		} catch (IOException | DataFormatException e) {
-			dbg_oops("Problem loading world settings for "+server.world.displayName);
-			e.printStackTrace();
+    	try {    		
+    		dbg_oops("Loading world settings for "+world.displayName);
+			StackResizer.currentSettings = SRSettings.fromWorldName(world.displayName);
+			
+		} catch (IOException | DataFormatException e) {			
+			dbg_oops("Problem loading world settings for "+world.displayName);
+			e.printStackTrace();			
 		}
     	ensureBaseBlacklist();
+	}
+    
+    public static void worldStartEvent(Server server) {
+    	worldStartEvent(server.world);
 	}
     
     public static void reloadSettings() {
@@ -99,8 +106,8 @@ public class StackResizer {
 	}
     
     public static void serverSaveEvent(Server server) {
-    	dbg_oops("Server save event triggered.");
-    	StackResizer.currentServer = server;
+    	//StackResizer.currentServer = server;
+    	dbg_oops("Server save event triggered.");    	
     	dbg_oops("Saving mod settings at "+getCurrentSettings().savePath());
 		try {
 			getCurrentSettings().save();
@@ -136,6 +143,7 @@ public class StackResizer {
     }
     
     public void registerCommands() {
+    	
         CommandsManager.registerServerCommand(new GetBlacklistCommand());
         CommandsManager.registerServerCommand(new AddBlacklistCommand());
         CommandsManager.registerServerCommand(new AddAllBlacklistCommand());
@@ -152,6 +160,7 @@ public class StackResizer {
         CommandsManager.registerServerCommand(new SetDebugStateCommand());
         CommandsManager.registerServerCommand(new SetEnabledStateCommand());
         CommandsManager.registerServerCommand(new TestExternalCommand());
+        
     }    
      
     public static void setDebugState(boolean val) {
@@ -316,7 +325,7 @@ public class StackResizer {
 	
     // Save data only if the calling client is the server or the owner
     public static void saveModData() {  
-    	 if (getCurrentServer() == null || !clientIsOwnerAuth()) return;
+    	//if (getCurrentServer() == null || !clientIsOwnerAuth()) return;    	 
         try {
 			getCurrentSettings().save();
 		} catch (IOException e) {
@@ -351,12 +360,13 @@ public class StackResizer {
 	}
 
 	public static MainGame mainGameOrNull() {
-		return ((necesse.engine.GlobalData.getCurrentState()) instanceof MainGame) ? ((MainGame)necesse.engine.GlobalData.getCurrentState()) : null;
+		return ((necesse.engine.GlobalData.getCurrentState()) instanceof MainGame) ?
+				((MainGame)necesse.engine.GlobalData.getCurrentState()) : null;
 	}
 	
 	public static String getCurrentWorld() {
 		MainGame mg = mainGameOrNull();
-		if (mg == null) return "";
+		if (mg == null) return "none";
 		return mg.getClient().getLocalServer().world.displayName;
 	}
 	
@@ -365,8 +375,8 @@ public class StackResizer {
 	}
 
 	public static SRSettings getCurrentSettings() {
-		if(currentSettings==null) currentSettings = SRSettings.getDefaultSettings(getCurrentWorld());
-		return StackResizer.currentSettings;
+			if(currentSettings==null) return SRSettings.getDefaultSettings(getCurrentWorld());
+		return currentSettings;
 	}
 
 	public static void setEnabled(boolean result_state) {
@@ -396,6 +406,8 @@ public class StackResizer {
 		currentSettings.itemBlacklist.addAll(newAdditions);
 		return newAdditions.size();
 	}
+
+	
 
 	
 

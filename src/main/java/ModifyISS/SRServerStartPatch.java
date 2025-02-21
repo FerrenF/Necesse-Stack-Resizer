@@ -1,14 +1,15 @@
 package main.java.ModifyISS;
-import necesse.engine.modLoader.annotations.ModConstructorPatch;
+import java.io.File;
 
-import necesse.engine.network.server.Server;
-import necesse.engine.network.server.ServerSettings;
+import necesse.engine.modLoader.annotations.ModConstructorPatch;
+import necesse.engine.world.World;
 import net.bytebuddy.asm.Advice;
 
-@ModConstructorPatch(target = Server.class, arguments = {ServerSettings.class})
+@ModConstructorPatch(target = World.class, arguments = {File.class, boolean.class})
 public class SRServerStartPatch {
+	
     @Advice.OnMethodExit
-    static void onExit(@Advice.This Server server,  @Advice.Argument(0) ServerSettings serverSettings) {
-    	StackResizer.serverConnectEvent(server, serverSettings);
+    static void onExit(@Advice.This World world,  @Advice.Argument(0) File file, @Advice.Argument(1) boolean isSimple) {
+    	StackResizer.worldStartEvent(world);
     }
 }
