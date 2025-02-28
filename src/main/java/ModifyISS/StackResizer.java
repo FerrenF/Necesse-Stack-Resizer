@@ -367,7 +367,7 @@ public class StackResizer {
 	public static String getCurrentWorld() {
 		MainGame mg = mainGameOrNull();
 		if (mg == null) return "none";
-		return mg.getClient().getLocalServer().world.displayName;
+		return mg.getClient().worldEntity.serverWorld.displayName;
 	}
 	
 	public static boolean getDebugState() {

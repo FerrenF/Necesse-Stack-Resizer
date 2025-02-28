@@ -1,7 +1,7 @@
 # Necesse Stack Resizer Mod
 ![Preview](./preview.png)  
 
-## v0.3.1 Latest
+## v0.3.2 Latest
 
 ## Shoutout  
 This mod is inspired by the original **Increased Stack Size** mod by [@dianchia](https://github.com/dianchia). However, it aims to be a more robust implementation with expanded features and greater flexibility.  
@@ -142,6 +142,7 @@ Certain item classes are blacklisted by default to help mitigate issues. These c
 - Or, submit an issue here.
 
 ## History
+- 02-28-2025 - v0.3.2 Fixed issue with clients crashing on connect to remote server.
 - 02-21-2025 - v0.3.1 Fixed issue where lists would not save.
 - 02-19-2025 - v0.3.0 Added static field checks, added bulk set commands.
 - 02-15-2025 - v0.2.0 Major Refactor
