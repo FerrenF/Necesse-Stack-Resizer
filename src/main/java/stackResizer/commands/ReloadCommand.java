@@ -1,6 +1,6 @@
-package main.java.ModifyISS.commands;
+package stackResizer.commands;
 
-import main.java.ModifyISS.StackResizer;
+import stackResizer.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -11,16 +11,17 @@ import necesse.engine.network.server.ServerClient;
 
 import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
 
-public class SetDebugStateCommand extends ModularChatCommand {
-	public SetDebugStateCommand() {
-		super("stackresize.debug", "Sets the debug state for the mod. Can create log spam.", PermissionLevel.OWNER, false, new CmdParameter[]{
-				new CmdParameter("value", new BoolParameterHandler(false),false)
+public class ReloadCommand extends ModularChatCommand {
+	public ReloadCommand() {
+		super("stackresize.reload", "Reloads the current blacklist and modified stack sizes from the mod's saved information.", PermissionLevel.OWNER, false, new CmdParameter[]{
+				new CmdParameter("quiet", new BoolParameterHandler(false),true)
 		});
 	}
 
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
 			CommandLog logs) {				
-		logs.add((boolean)args[0] ? "Debug state is now on." : "Debug state is now off.");
-		StackResizer.setDebugState((boolean)args[0]);	
+		if(!(boolean)args[0]) logs.add("Loading ISS information...");
+		StackResizer.reloadSettings();
+		logs.add("Completed.");
 	}
 }

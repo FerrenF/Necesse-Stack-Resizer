@@ -1,4 +1,4 @@
-package main.java.ModifyISS;
+package stackResizer;
 import java.io.File;
 
 import necesse.engine.modLoader.annotations.ModConstructorPatch;

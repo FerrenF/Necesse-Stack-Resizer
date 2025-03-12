@@ -1,4 +1,4 @@
-package main.java.ModifyISS;
+package stackResizer;
 import necesse.engine.modLoader.annotations.ModMethodPatch;
 import necesse.inventory.item.Item;
 import net.bytebuddy.asm.Advice;

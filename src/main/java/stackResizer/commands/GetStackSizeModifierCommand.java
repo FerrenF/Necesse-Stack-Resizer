@@ -1,6 +1,6 @@
-package main.java.ModifyISS.commands;
+package stackResizer.commands;
 
-import main.java.ModifyISS.StackResizer;
+import stackResizer.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -11,9 +11,9 @@ import necesse.engine.network.server.ServerClient;
 
 import necesse.engine.commands.parameterHandlers.StringParameterHandler;
 import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
-public class RemoveBlacklistCommand extends ModularChatCommand {
-	public RemoveBlacklistCommand() {
-		super("stackresize.blacklist.remove", "Remove an item or class from the blacklist..", PermissionLevel.OWNER, false,new CmdParameter[]{
+public class GetStackSizeModifierCommand extends ModularChatCommand {
+	public GetStackSizeModifierCommand() {
+		super("stackresize.stacksize.get", "Get the stack size for an item.", PermissionLevel.USER, false, new CmdParameter[]{
 				new CmdParameter("item", new StringParameterHandler(),false),
 				new CmdParameter("is_class", new BoolParameterHandler(false),true),
 				new CmdParameter("quiet", new BoolParameterHandler(false),true)
@@ -21,19 +21,25 @@ public class RemoveBlacklistCommand extends ModularChatCommand {
 	}
 
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
-			CommandLog logs) {			
-		int result = (boolean)args[2] ? StackResizer.removeClassFromBlacklist((String)args[0]) :
-			StackResizer.removeItemFromBlacklist((String)args[0]);
+			CommandLog logs) {		
 		
-		String resultType = (boolean)args[2] ? "class name" : "item string ID";
+		String target = (String)args[0];
+		boolean is_class = (boolean)args[1];
+		boolean quiet = (boolean)args[2];
+		
+		int result = is_class ? StackResizer.getClassStackSize(target) :
+			StackResizer.getItemStackSize(target);
+		
+		if (quiet) return;
+		String resultType = is_class ? "class name" : "item string ID";
 		if (result > 0){
-			logs.add("Removed "+resultType+" from blacklist .");
+			logs.add("Added "+resultType+" to blacklist .");
 		}
 		else if( result == -1){
-			logs.add("Could not remove from blacklist: "+resultType+" not found.");
+			logs.add("Could not add to blacklist: "+resultType+" not found.");
 		}
 		else if( result == 0){
-			logs.add("Could not remove from blacklist: "+resultType+" is not on the blacklist.");
+			logs.add("Could not add to blacklist: "+resultType+" already on blacklist.");
 		}
 	}
 }

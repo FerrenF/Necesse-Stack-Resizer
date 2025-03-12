@@ -1,6 +1,6 @@
-package main.java.ModifyISS.commands;
+package stackResizer.commands;
 
-import main.java.ModifyISS.StackResizer;
+import stackResizer.StackResizer;
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -11,9 +11,9 @@ import necesse.engine.network.server.ServerClient;
 
 import necesse.engine.commands.parameterHandlers.StringParameterHandler;
 import necesse.engine.commands.parameterHandlers.BoolParameterHandler;
-public class GetStackSizeModifierCommand extends ModularChatCommand {
-	public GetStackSizeModifierCommand() {
-		super("stackresize.stacksize.get", "Get the stack size for an item.", PermissionLevel.USER, false, new CmdParameter[]{
+public class AddBlacklistCommand extends ModularChatCommand {
+	public AddBlacklistCommand() {
+		super("stackresize.blacklist.add", "Add an item to the blacklist.", PermissionLevel.OWNER, false,new CmdParameter[]{
 				new CmdParameter("item", new StringParameterHandler(),false),
 				new CmdParameter("is_class", new BoolParameterHandler(false),true),
 				new CmdParameter("quiet", new BoolParameterHandler(false),true)
@@ -21,17 +21,11 @@ public class GetStackSizeModifierCommand extends ModularChatCommand {
 	}
 
 	public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
-			CommandLog logs) {		
+			CommandLog logs) {			
+		int result = (boolean)args[2] ? StackResizer.addClassToBlacklist((String)args[0]) :
+			StackResizer.addItemToBlacklist((String)args[0]);
 		
-		String target = (String)args[0];
-		boolean is_class = (boolean)args[1];
-		boolean quiet = (boolean)args[2];
-		
-		int result = is_class ? StackResizer.getClassStackSize(target) :
-			StackResizer.getItemStackSize(target);
-		
-		if (quiet) return;
-		String resultType = is_class ? "class name" : "item string ID";
+		String resultType = (boolean)args[2] ? "class name" : "item string ID";
 		if (result > 0){
 			logs.add("Added "+resultType+" to blacklist .");
 		}

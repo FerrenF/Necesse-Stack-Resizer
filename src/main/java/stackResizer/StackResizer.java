@@ -1,16 +1,13 @@
-package main.java.ModifyISS;
+package stackResizer;
 
 import necesse.engine.GameLog;
 import necesse.engine.GlobalData;
 import necesse.engine.commands.CommandsManager;
-import necesse.engine.commands.ParsedCommand;
 import necesse.engine.commands.PermissionLevel;
 import necesse.engine.modLoader.LoadedMod;
 import necesse.engine.modLoader.annotations.ModEntry;
 import necesse.engine.network.client.Client;
 import necesse.engine.network.server.Server;
-import necesse.engine.network.server.ServerClient;
-import necesse.engine.network.server.ServerSettings;
 import necesse.engine.registries.ItemRegistry;
 import necesse.engine.state.MainGame;
 import necesse.engine.state.MainMenu;
@@ -23,7 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.zip.DataFormatException;
 
-import main.java.ModifyISS.commands.*;
+import stackResizer.commands.*;
 import necesse.inventory.item.Item;
 
 @ModEntry
@@ -127,13 +124,8 @@ public class StackResizer {
         Client c_c = getGameClient();
         return c_c.isSingleplayer() || ( (c_c.getPermissionLevel() == PermissionLevel.OWNER) || 
                (c_c.getPermissionLevel() == PermissionLevel.SERVER) );
-    }   
-    
-    
-    private static Server getCurrentServer() {
-    	return StackResizer.currentServer;
-    }
-    
+    }       
+        
     public static void ensureBaseBlacklist() {    	
     	
     	for (Class<?> clazz : BASE_CLASS_BLACKLIST) {
@@ -372,8 +364,7 @@ public class StackResizer {
 			displayName= mg.getClient().worldEntity.serverWorld.displayName;
 		}
 		else {		
-			// Try a different approach.
-			displayName = mg.getClient().getLocalServer().world.displayName;
+			displayName = mg.getClient().playingOnDisplayName.toString();
 			if(displayName == null) {
 				return "unknown"; // Fallback
 			}

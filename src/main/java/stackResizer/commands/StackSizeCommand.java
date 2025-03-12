@@ -1,6 +1,9 @@
-package main.java.ModifyISS.commands;
+package stackResizer.commands;
 
-import main.java.ModifyISS.StackResizer;
+import stackResizer.StackResizer;
+
+import java.util.List;
+
 import necesse.engine.commands.CmdParameter;
 import necesse.engine.commands.CommandLog;
 import necesse.engine.commands.ModularChatCommand;
@@ -19,8 +22,11 @@ public class StackSizeCommand extends ModularChatCommand {
 			CommandLog logs) {	
 			int c_s = StackResizer.getDefaultStackSizeModifier();	
 			logs.add("Default stack size: "+c_s);
-			logs.add("Class modifiers: "+StackResizer.getCurrentSettings().classModifierListToString());
-			logs.add("Item modifiers: "+StackResizer.getCurrentSettings().itemModifierListToString());
-	
+			logs.add("Class modifiers: ");
+			List<String> classlist = StackResizer.getCurrentSettings().classModifiers.keySet().stream().map((classname)->classname.getName()).toList();
+			classlist.forEach((msg)->logs.add("CLASS: "+msg));
+			logs.add("Item modifiers: ");
+			List<String> itemlist = StackResizer.getCurrentSettings().itemModifiers.entrySet().stream().map((entry)->String.format("%s - %s", entry.getKey(), entry.getValue())).toList();
+			itemlist.forEach((msg)->logs.add("ITEM: "+msg));
 	}
 }
