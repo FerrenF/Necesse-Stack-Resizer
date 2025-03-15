@@ -3,6 +3,8 @@
 
 ## v0.3.4 Latest
 
+Find a list of necesse classes [HERE](./necesseClasslist.txt)!
+
 ## Shoutout  
 This mod is inspired by the original **Increased Stack Size** mod by [@dianchia](https://github.com/dianchia). However, it aims to be a more robust implementation with expanded features and greater flexibility.  
 

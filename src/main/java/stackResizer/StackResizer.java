@@ -42,7 +42,6 @@ public class StackResizer {
 	
 	private static SRSettings currentSettings;	
     private static LoadedMod currentModInstance;
-    private static Server currentServer;
     
     // Regular oops. Straight to log.
     public static void oops(String how) {
@@ -73,9 +72,7 @@ public class StackResizer {
     }
     
     public static void worldStartEvent(World world) {
-    	dbg_oops("World start event triggered.");
-    	StackResizer.currentServer = world.server;	
-    	
+    	dbg_oops("World start event triggered.");    	
     	try {    		
     		dbg_oops("Loading world settings for "+world.displayName);
 			StackResizer.currentSettings = SRSettings.fromWorldName(world.displayName);
