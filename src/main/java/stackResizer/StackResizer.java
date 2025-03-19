@@ -29,6 +29,28 @@ public class StackResizer {
 	private static final Class<?>[] BASE_CLASS_BLACKLIST = {
 		    necesse.inventory.item.mountItem.MountItem.class,
 		    necesse.inventory.item.trinketItem.TrinketItem.class,
+		    necesse.inventory.item.mountItem.MountItem.class,
+		    necesse.inventory.item.trinketItem.BlinkScepterTrinketItem.class,
+		    necesse.inventory.item.trinketItem.CactusShieldTrinketItem.class,
+		    necesse.inventory.item.trinketItem.CalmingMinersBouquetTrinketItem.class,
+		    necesse.inventory.item.trinketItem.CrystalShieldTrinketItem.class,
+		    
+		    necesse.inventory.item.trinketItem.CombinedTrinketItem.class,
+		    necesse.inventory.item.trinketItem.FoolsGambitTrinketItem.class,
+		    necesse.inventory.item.trinketItem.ForceOfWindTrinketItem.class,
+		    necesse.inventory.item.trinketItem.GhostBootsTrinketItem.class,
+		    necesse.inventory.item.trinketItem.HoverBootsTrinketItem.class,
+		    necesse.inventory.item.trinketItem.KineticBootsTrinketItem.class,
+		    necesse.inventory.item.trinketItem.LeatherDashersTrinketItem.class,
+		    necesse.inventory.item.trinketItem.MinersBouquetTrinketItem.class,
+		    necesse.inventory.item.trinketItem.ShieldTrinketItem.class,
+		    necesse.inventory.item.trinketItem.SimpleTrinketItem.class,
+		    necesse.inventory.item.trinketItem.SiphonShieldTrinketItem.class,
+		    necesse.inventory.item.trinketItem.TrinketItem.class,
+		    necesse.inventory.item.trinketItem.WindBootsTrinketItem.class,
+		    necesse.inventory.item.trinketItem.WoodShieldTrinketItem.class,
+		    necesse.inventory.item.trinketItem.ZephyrBootsTrinketItem.class,
+		    
 		    necesse.inventory.item.miscItem.AmmoPouch.class,
 		    necesse.inventory.item.miscItem.AmmoBag.class,
 		    necesse.inventory.item.miscItem.CoinPouch.class,
@@ -37,7 +59,10 @@ public class StackResizer {
 		    necesse.inventory.item.miscItem.GatewayTabletItem.class,
 		    necesse.inventory.item.miscItem.PotionBag.class,
 		    necesse.inventory.item.miscItem.PotionPouch.class,
-		    necesse.inventory.item.miscItem.VoidPouchItem.class
+		    necesse.inventory.item.miscItem.VoidPouchItem.class,
+		    necesse.inventory.item.armorItem.ArmorItem.class,
+		    necesse.inventory.item.toolItem.ToolItem.class
+		    
 		};
 	
 	private static SRSettings currentSettings;	
@@ -75,7 +100,7 @@ public class StackResizer {
     	dbg_oops("World start event triggered.");    	
     	try {    		
     		dbg_oops("Loading world settings for "+world.displayName);
-			StackResizer.currentSettings = SRSettings.fromWorldName(world.displayName);
+			StackResizer.currentSettings = SRSettings.fromWorldName(getCurrentWorld());
 			
 		} catch (IOException | DataFormatException e) {			
 			dbg_oops("Problem loading world settings for "+world.displayName);
@@ -198,9 +223,16 @@ public class StackResizer {
     
     public static boolean isInBlacklist(Item item) {
     	Class<?> itemClass = item.getClass();
-    	if (getCurrentSettings().classBlacklist.contains(itemClass)) return true;
-    	if (getCurrentSettings().itemBlacklist.contains(item.getStringID())) return true;
-        return false;
+    	boolean inList = false;
+    	for(Class<?> clazz : getCurrentSettings().classBlacklist) {
+    		if(clazz.isAssignableFrom(itemClass)) {
+    			inList = true;
+    			break;
+    		}
+    	}
+    	    
+    	if (getCurrentSettings().itemBlacklist.contains(item.getStringID())) inList = true;
+        return inList;
     }
 
     public static int setItemStackSizeModifier(String item, int stackSize) {
@@ -269,19 +301,29 @@ public class StackResizer {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             // Field not found or not accessible.
         }        
+                
+       
         
-        if (isInBlacklist(item)) {
-            return currentStackSize;
-        }               
-        
-        if (getCurrentSettings().modify_stackSize_enabled) {
-            currentStackSize = getCurrentSettings().default_stackSize_modifier;
+        if (getCurrentSettings().itemModifiers.containsKey(item.getStringID())) {
+        	return getCurrentSettings().itemModifiers.get(item.getStringID()).intValue();
         }
+        else {
+	        for (Class<?> clz : getCurrentSettings().classModifiers.keySet()) {
+		        	if(clz.isAssignableFrom(item.getClass())) {	        		
+		        		return getCurrentSettings().classModifiers.get(clz);	        	
+	        	}
+	        }   
         
-        if (getCurrentSettings().itemModifiers.containsKey(item.getStringID())) return getCurrentSettings().itemModifiers.get(item.getStringID()).intValue();
-        for (Class<?> clz : getCurrentSettings().classModifiers.keySet()) {
-        	if(item.getClass().isInstance(clz)) return getCurrentSettings().classModifiers.get(clz);
-        }        
+	        if (isInBlacklist(item)) {
+	            return currentStackSize;
+	        }     
+	        else
+	        {
+	        	 if (getCurrentSettings().modify_stackSize_enabled) {
+	                 currentStackSize = getCurrentSettings().default_stackSize_modifier;
+	             }
+	        }
+        }
         
         return Math.abs(currentStackSize);
     }
@@ -361,7 +403,7 @@ public class StackResizer {
 			displayName= mg.getClient().worldEntity.serverWorld.displayName;
 		}
 		else {		
-			displayName = mg.getClient().playingOnDisplayName.toString();
+			displayName = mg.getClient().playingOnDisplayName.translate();
 			if(displayName == null) {
 				return "unknown"; // Fallback
 			}

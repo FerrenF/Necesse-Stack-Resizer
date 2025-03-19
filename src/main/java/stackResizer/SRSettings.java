@@ -100,7 +100,7 @@ public class SRSettings{
         public static SRSettings fromCurrentWorld(Client client) throws ClientNotInitializedException, WorldNotInitializedException, IOException, DataFormatException{        	
         	if (client == null) throw new SRSettings.ClientNotInitializedException();        	
         	if(client.worldEntity == null) throw new WorldNotInitializedException();        	
-        	return fromWorldName(client.worldEntity.serverWorld.displayName);
+        	return fromWorldName(StackResizer.getCurrentWorld());
         }
                 
         // Save data only if the calling client is the server or the owner
@@ -224,7 +224,7 @@ public class SRSettings{
 		}
 	    
 		public static String getServerSpecificSavePath(Server server) {
-			return getWorldSpecificSavePath(server.world.displayName);
+			return getWorldSpecificSavePath(StackResizer.getCurrentWorld());
 		}
 				
 		public String classBlacklistToString() {
