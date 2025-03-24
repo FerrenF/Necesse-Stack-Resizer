@@ -18,43 +18,7 @@ This mod is inspired by the original **Increased Stack Size** mod by [@dianchia]
 - All settings are specific to individual worlds, stored at %APPDATA%/Necesse/cfg/mods
 
 ## Commands  
-These commands allow server administrators and server-side mods to adjust stack sizes and blacklists:  
-
-| Command                         | Description | Example |
-|---------------------------------|-------------|-------------|
-| `stackresize.blacklist`                 | View the current blacklist. Anyone may use this command. | "/stackresize.blacklist" |
-| `stackresize.blacklist.add <item name/class name> <is_class[true/false]>** <quiet[true/false]>**` | Add an item or class to the blacklist. | "/stackresize.blacklist.add wormbait false false" <br/> "/stackresize.blacklist.add necesse.inventory.item.miscItem.Lunchbox true false"|
-| `stackresize.blacklist.remove <item name/class name> <is_class[true/false]>** <quiet[true/false]>**` | Remove an item or class from the blacklist. | "/stackresize.blacklist.remove wormbait false false" <br/> "/stackresize.blacklist.remove necesse.inventory.item.miscItem.Lunchbox true false" |
-| `stackresize.blacklist.addall <formatted_string>*** <is_class[true/false]>** <quiet[true/false]>**` | Add a list of items or classes to the blacklist. They must all be of one type, item or class. | See Below for Examples |
-| `stackresize.stacksize.set <item name/class name> <value> <is_class[true/false]>** <quiet[true/false]>**` | Set a custom stack size modifier. | "/stackresize.stacksize.set wormbait 100 false false" <br/> "/stackresize.stacksize.set necesse.inventory.item.miscItem.Lunchbox 1 true false" |
-| `stackresize.stacksize.setall <formatted_string>*** <is_class[true/false]>** <quiet[true/false]>**` | Bulk set class or item mofidiers from a formatted string. | See Below for Examples |
-| `stackresize.stacksize.remove <item name/class name> <is_class[true/false]>** <quiet[true/false]>**` | Remove a custom stack size modifier. | "/stackresize.stacksize.remove wormbait 100 false false" <br/> "/stackresize.stacksize.remove necesse.inventory.item.miscItem.Lunchbox 1 true false" |
-| `stackresize.stacksize.default <value>` | Set the default stack size modifier. | "/stackresize.stacksize.default 5000" |
-| `stackresize.stacksize.get <item name/class name> <is_class[true/false]>** <quiet[true/false]>**` | Get the current stack size modifier for an item or class. Anyone may use this command. | "/stackresize.stacksize.get wormbait false" <br/> "/stackresize.stacksize.get necesse.inventory.item.miscItem.Lunchbox false" |
-| `stackresize.stacksize` | List stack size information command. Anyone may use this command. | "/stackresize.stacksize" |
-| `stackresize.save` | Save current settings to configuration. | "/stackresize.save" |
-| `stackresize.reload` | Reload the current settings from configuration. | "/stackresize.reload" |
-| `stackresize` | Display mod information. Anyone may use this command. | "/stackresize" |
-
-** denotes an optional parameter. These may or may not be present. For example: <br/> "/stackresize. blacklist.add wormbait" will perform the same action as "/stackresize. blacklist.add wormbait false true"
-
-*** denotes a formatted string. The commands that use these strings require that they be formatted in a particular manner:
-
-- Command: stackresize.blacklist.addall
-  - Format: "item;item;item;" "class;class;class;" 
-  - Examples: 
-      - ```/stackresize.blacklist.addall wormbait;craftingguide;someotheritem;```<br/>
-      - ```/stackresize.blacklist.addall necesse.inventory.item.mountItem.MountItem;necesse.inventory.item.trinketItem.TrinketItem;necesse.inventory.item.miscItem.AmmoBag;```
-		 
-- Command: stackresize.stacksize.setall
-  - Format: "item=stacksize;item=stacksize;item=stacksize;" "class=stacksize;class=stacksize;class=stacksize;"
-  - Examples:
-    -	```/stackresize.stacksize.setall wormbait=100;craftingguide=1;somethingelse=9999;```
-	-	```/stackresize.stacksize.setall necesse.inventory.item.mountItem.MountItem=1;necesse.inventory.item.trinketItem.TrinketItem=10;necesse.inventory.item.miscItem.AmmoBag=999;```
-
-Find a list of necesse classes [HERE](./necesseClasslist.txt)!
-
-There are some unlisted commands that are for testing purposes.
+Type /stackresize in-game to use commands. They are very simple.
 
 ## External Mod Integration  
 There are three ways to interact with this mod from another mod:
@@ -70,35 +34,6 @@ Classes that contain this field, regardless of the value of the field, will be i
 Classes that contain this field will have their stack sizes modified to the amount specified.
 
 The fields must have public visibility and also be static in order to function.
-
-
-### Using CommandManager
-
-These examples can be seen running in the /stackresize.tests.external command! The script for this example and similar ones are in the 'TestExternalCommand.java' file in the root directory of this repository.
-
- - Example 1:
-	```
-
-        // We want to execute the command on the server client.
-	    private void runServerCmd(Client client, String full_command) {
-    	    ServerClient myServerClient = client.getLocalServer().getLocalServerClient();
-    	    client.commandsManager.runServerCommand(new ParsedCommand(full_command), myServerClient);    	
-        }
-
-        // Note the '/' is not present at the beginning of the command.
-        private void setItemStackSizeExternallyWithCmdMgr(Client client, String item, int count,boolean is_class, boolean quiet) {
-    	    if(client == null) return;
-    	    String commandString = String.format("stackresize.stacksize.set %s %d %s %s", item, count, String.valueOf(is_class), String.valueOf(quiet));
-    	    runServerCmd(client, commandString);
-    	    return;
-        }
-
-         this.setItemStackSizeExternallyWithCmdMgr(server.getLocalClient(), "craftingguide", 5, false, false);
-        
-	```
-
-There are a few ways to do run a command directly through the server client's CommandManager and here is one of them. The client that calls the command needs to have the correct permission level ( OWNER or SERVER) to run commands using runServerCommand. 
-
 
 ### Editing the configuration externally.
 
@@ -153,7 +88,6 @@ The base blacklist encompasses things that some players might want to have stack
 stack some of the items that extend the above classes, then setting a custom stack size for them (either item name or class) will override their presence on the blacklist.
 You may add weapons and armor back into stackresize as a custom stack size, but it is not reccomended. Stacked weapons and armor cause problems.
 
-Find a list of necesse classes [HERE](./necesseClasslist.txt)!
 
 ## Installation  
 1. Download the mod `.jar` file.  

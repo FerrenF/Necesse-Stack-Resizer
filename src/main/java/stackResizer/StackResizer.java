@@ -7,21 +7,23 @@ import necesse.engine.commands.PermissionLevel;
 import necesse.engine.modLoader.LoadedMod;
 import necesse.engine.modLoader.annotations.ModEntry;
 import necesse.engine.network.client.Client;
-import necesse.engine.network.server.Server;
 import necesse.engine.registries.ItemRegistry;
 import necesse.engine.state.MainGame;
 import necesse.engine.state.MainMenu;
 import necesse.engine.state.State;
-import necesse.engine.world.World;
-
+import necesse.engine.util.GameUtils;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
 
-import stackResizer.commands.*;
+import necesse.inventory.InventoryItem;
 import necesse.inventory.item.Item;
+import necesse.inventory.item.ItemCategory;
+
+
 
 @ModEntry
 public class StackResizer {
@@ -64,10 +66,10 @@ public class StackResizer {
 		    necesse.inventory.item.toolItem.ToolItem.class
 		    
 		};
-	
+	private static String currentWorldName;
 	private static SRSettings currentSettings;	
     private static LoadedMod currentModInstance;
-    
+
     // Regular oops. Straight to log.
     public static void oops(String how) {
         GameLog.out.println(SRSettings.SRModName +": "+how);
@@ -89,28 +91,21 @@ public class StackResizer {
     public void init() {
     	currentModInstance = LoadedMod.getRunningMod();  	
     	this.registerCommands();
-        oops("Increased Stack Size+ loaded.");        
+        oops("Increased Stack Size+ loaded.");    
     }
     
-    public void postInit() {
-    	
-    }
     
-    public static void worldStartEvent(World world) {
+    public static void worldStartEvent(String string) {
+    	currentWorldName = string;
     	dbg_oops("World start event triggered.");    	
     	try {    		
-    		dbg_oops("Loading world settings for "+world.displayName);
-			StackResizer.currentSettings = SRSettings.fromWorldName(getCurrentWorld());
-			
+    		dbg_oops("Loading world settings for "+string);
+			StackResizer.currentSettings = SRSettings.fromWorldName(getCurrentWorld());	
 		} catch (IOException | DataFormatException e) {			
-			dbg_oops("Problem loading world settings for "+world.displayName);
+			dbg_oops("Problem loading world settings for "+getCurrentWorld());
 			e.printStackTrace();			
 		}
     	ensureBaseBlacklist();
-	}
-    
-    public static void worldStartEvent(Server server) {
-    	worldStartEvent(server.world);
 	}
     
     public static void reloadSettings() {
@@ -124,7 +119,7 @@ public class StackResizer {
     	ensureBaseBlacklist();
 	}
     
-    public static void serverSaveEvent(Server server) {
+    public static void serverSaveEvent() {
     	//StackResizer.currentServer = server;
     	dbg_oops("Server save event triggered.");    	
     	dbg_oops("Saving mod settings at "+getCurrentSettings().savePath());
@@ -158,7 +153,7 @@ public class StackResizer {
     
     public void registerCommands() {
     	
-        CommandsManager.registerServerCommand(new GetBlacklistCommand());
+      /*  CommandsManager.registerServerCommand(new GetBlacklistCommand());
         CommandsManager.registerServerCommand(new AddBlacklistCommand());
         CommandsManager.registerServerCommand(new AddAllBlacklistCommand());
         CommandsManager.registerServerCommand(new RemoveBlacklistCommand());
@@ -173,30 +168,32 @@ public class StackResizer {
         CommandsManager.registerServerCommand(new ReloadCommand());
         CommandsManager.registerServerCommand(new SetDebugStateCommand());
         CommandsManager.registerServerCommand(new SetEnabledStateCommand());
-        CommandsManager.registerServerCommand(new TestExternalCommand());
-        
+        CommandsManager.registerServerCommand(new TestExternalCommand());*/
+    	SRCommandHandler.buildAutocompletes();
+        CommandsManager.registerServerCommand(new SRCommandHandler.StackSizeCommand());
     }    
      
     public static void setDebugState(boolean val) {
     	getCurrentSettings().debug_state = val;
     }
   
-    public static int addItemToBlacklist(String item) {    	
+    public static int addItemToBlacklist(String item) { 
     	boolean itemExists = ItemRegistry.itemExists(item);
         if (!itemExists) return -1;
         getCurrentSettings().itemBlacklist.add(item);
         return ItemRegistry.getItemID(item);
     }
     
+ 
     public static int addClassToBlacklist(String clzz) {
     	Class<?> clazz;
 		try {
 			clazz = Class.forName(clzz);
 		} catch (ClassNotFoundException e) {
 			return -1;
-		}
-		
+		}		
         return addClassToBlacklist(clazz);
+    	
     }
     
     public static int addClassToBlacklist(Class<?> clzz) {
@@ -221,24 +218,54 @@ public class StackResizer {
 		return removeClassFromBlacklist(clzz);
     }
     
+    public static boolean itemIsCategory(String it) {
+    	return (it.contains("."));
+    }
+    
+    public static List<String> categoryBlacklistItems(){
+    	return getCurrentSettings().itemBlacklist.stream().filter((item)->itemIsCategory(item)).toList();
+    }
+    
     public static boolean isInBlacklist(Item item) {
-    	Class<?> itemClass = item.getClass();
-    	boolean inList = false;
-    	for(Class<?> clazz : getCurrentSettings().classBlacklist) {
-    		if(clazz.isAssignableFrom(itemClass)) {
-    			inList = true;
-    			break;
+    	    	
+    	if(item.getClass().equals(InventoryItem.class)) {
+    		return true;
+    	}
+    	
+    	if (getCurrentSettings().itemBlacklist.contains(item.getStringID())) {
+    		return true;
+    	}    
+    	
+    	for(ItemCategory ic: getCurrentSettings().itemCategoryBlacklist) {
+    		if(ic.containsItem(item)) {
+    			return true;
     		}
     	}
-    	    
-    	if (getCurrentSettings().itemBlacklist.contains(item.getStringID())) inList = true;
-        return inList;
+    	
+    	Class<?> itemClass = item.getClass();
+    	for(Class<?> clazz : getCurrentSettings().classBlacklist) {
+    		if(clazz.isAssignableFrom(itemClass)) {
+    			return true;
+    		}
+    	}    	    
+    	
+        return false;
     }
 
     public static int setItemStackSizeModifier(String item, int stackSize) {
     	boolean itemExists = ItemRegistry.itemExists(item);
     	if(!itemExists) return -1;
 	    getCurrentSettings().itemModifiers.put(item, stackSize);       
+        return 1;
+    }
+    
+    public static int setCategoryStackSizeModifier(ItemCategory ic, int stackSize) {
+	    getCurrentSettings().categoryModifiers.put(ic, stackSize);
+        return 1;
+    }
+    
+    public static int addCategoryToBlacklist(ItemCategory ic) {
+	    getCurrentSettings().itemCategoryBlacklist.add(ic);
         return 1;
     }
     
@@ -271,6 +298,14 @@ public class StackResizer {
 		return removeClassStackSizeModifier(clzz);
 	}
 
+    public static int removeItemCategoryFromBlacklist(ItemCategory ic) {
+		return getCurrentSettings().itemCategoryBlacklist.remove(ic) ? 1 : -1;       
+	}
+	
+    public static int removeItemCategoryFromModifiers(ItemCategory ic) {
+		return getCurrentSettings().categoryModifiers.remove(ic) != null ? 1 : -1;       
+	}
+	
 	public static int removeItemStackSizeModifier(String item) {
 		return getCurrentSettings().itemModifiers.remove(item) != null ? 1 : -1;       
 	}
@@ -302,12 +337,15 @@ public class StackResizer {
             // Field not found or not accessible.
         }        
                 
-       
-        
         if (getCurrentSettings().itemModifiers.containsKey(item.getStringID())) {
         	return getCurrentSettings().itemModifiers.get(item.getStringID()).intValue();
         }
         else {
+        	
+        	for (Entry<ItemCategory, Integer> ic : getCurrentSettings().categoryModifiers.entrySet()) {
+		        if(ic.getKey().containsItem(item)) return ic.getValue();
+	        }   
+        	
 	        for (Class<?> clz : getCurrentSettings().classModifiers.keySet()) {
 		        	if(clz.isAssignableFrom(item.getClass())) {	        		
 		        		return getCurrentSettings().classModifiers.get(clz);	        	
@@ -339,11 +377,18 @@ public class StackResizer {
 			return -1;
 		}
 	}   
-   
+	
+	public static int getCategoryStackSize(ItemCategory itemCategory) {
+		if(currentSettings.categoryModifiers.containsKey(itemCategory)) {
+			return currentSettings.categoryModifiers.get(itemCategory);
+		}
+		return -1;
+	}
+	
     public static String getSavePath() {
     	String appDataCfgPath = GlobalData.cfgPath();
     	String loadedModName = currentModInstance.name;
-    	return appDataCfgPath+"mods/" + loadedModName;   
+    	return appDataCfgPath + "mods" + System.getProperty("file.separator") + loadedModName;   
     }
     
     public static String getSavePath(boolean suffix) {
@@ -365,11 +410,6 @@ public class StackResizer {
 		}
     }   
 
-    private static void setEnabledState(boolean enabled_state) {
-    	ig_oops("Enabled state of stack size mod has been changed. Be careful.");
-    	getCurrentSettings().modify_stackSize_enabled = enabled_state;	
-	}
-
 	public static Map<String, Integer> getItemModifiers() {
         return new HashMap<>(getCurrentSettings().itemModifiers); // Return a copy to prevent external modification
     }
@@ -390,25 +430,11 @@ public class StackResizer {
 		return currentModInstance;
 	}
 
-	public static MainGame mainGameOrNull() {
-		return ((necesse.engine.GlobalData.getCurrentState()) instanceof MainGame) ?
-				((MainGame)necesse.engine.GlobalData.getCurrentState()) : null;
-	}
-	
 	public static String getCurrentWorld() {
-		MainGame mg = mainGameOrNull();
-		if (mg == null) return "none";
-		String displayName;
-		if(mg.getClient().worldEntity.serverWorld != null) {
-			displayName= mg.getClient().worldEntity.serverWorld.displayName;
+		if(currentWorldName != null) {
+			return GameUtils.removeFileExtension(currentWorldName);
 		}
-		else {		
-			displayName = mg.getClient().playingOnDisplayName.translate();
-			if(displayName == null) {
-				return "unknown"; // Fallback
-			}
-		}
-		return displayName;
+		return "none";
 	}
 	
 	public static boolean getDebugState() {
@@ -447,6 +473,13 @@ public class StackResizer {
 		currentSettings.itemBlacklist.addAll(newAdditions);
 		return newAdditions.size();
 	}
+
+	public static Map<ItemCategory, Integer> getCategoryModifiers() {
+		
+		return currentSettings.categoryModifiers;
+	}
+
+	
 
 	
 
