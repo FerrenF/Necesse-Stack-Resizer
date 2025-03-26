@@ -1,5 +1,6 @@
 package stackResizer;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,8 @@ import necesse.engine.commands.parameterHandlers.IntParameterHandler;
 import necesse.engine.network.client.Client;
 import necesse.engine.network.server.Server;
 import necesse.engine.network.server.ServerClient;
+import necesse.inventory.InventoryItem;
+import necesse.inventory.item.Item;
 import necesse.inventory.item.ItemCategory;
 import necesse.inventory.item.ItemCategoryManager;
 public class SRCommandHandler {
@@ -59,6 +62,24 @@ public class SRCommandHandler {
 		}
 	}
 
+	public static String[] addHeldItem(String[] in) {			
+		String[] out = new String[in.length+2];
+		int index = 0;
+		out[index] = "heldItem";
+		index++;
+		out[index] = "heldCategory";
+		index++;
+		for(String i : in) {
+			out[index]=i;
+			index++;
+		}
+		return out;
+	}
+	
+	public static InventoryItem getHeldItem(ServerClient client) {
+		return client.playerMob.getSelectedItem();
+	}
+	
 	public static class StackSizeCommand extends ModularChatCommand {
 		
 		public StackSizeCommand() {
@@ -66,7 +87,7 @@ public class SRCommandHandler {
 		new CmdParameter[]{
 				new CmdParameter("action", new StringParameterHandler("set", actions.toArray(new String[] {}))),
 				new CmdParameter("target",
-						new StringParameterHandler("", autoCompletes.toArray(new String[] {}))
+						new StringParameterHandler("", addHeldItem(autoCompletes.toArray(new String[] {})))
 						, true),
 				new CmdParameter("amount", new IntParameterHandler(StackResizer.getDefaultStackSizeModifier()), true)
 			});
@@ -140,19 +161,34 @@ public class SRCommandHandler {
 	                    
 	                        case "get":
 	                        	
-	                        	if(targetArg.isEmpty()) {
+	                        	if(target.isBlank() || target.isEmpty()) {
 	                        		StackResizer.getCategoryModifiers().forEach((_category, _amt)->{	                        			
-	                        			logs.add("Category: " + _category + ": " + _amt);
+	                        			logs.add("Category: " + _category.stringID + ": " + _amt);
+	                        		});
+	                        		
+	                        		StackResizer.getItemModifiers().forEach((_item, _amt)->{	                        			
+	                        			logs.add("Item: " + _item + ": " + _amt);
 	                        		});
 	                        	}
-	                        	else if(commandCategoryMapping.containsKey(target)){
-	                        		logs.add("Stack size modifier for category " + target + " is " + StackResizer.getCategoryStackSize(commandCategoryMapping.get(target)));
-	                        	}
-	                        	else if(StackResizer.getItemStackSize(target)!=-1) {
-                            		logs.add("Stack size modifier for item " + target + " is " + amount + ".");
-                            	}	      
 	                        	else {
-	                        		logs.add("No modifiers found for item " + target + ".");
+	                        		
+	                        		if(target.equals("heldItem")) {
+		                        		target = getHeldItem(serverClient).item.getStringID();
+		                        	}
+		                        	else if(target.equals("heldCategory")) {		
+		                        		String[] tree = ItemCategory.getItemsCategory(getHeldItem(serverClient).item).getStringIDTree(false);
+		                        		target = tree[tree.length-1];
+		                        	}
+	                        	
+		                        	if(commandCategoryMapping.containsKey(target) && StackResizer.getCategoryStackSize(commandCategoryMapping.get(target))!=-1){
+		                        		logs.add("Stack size modifier for category " + target + " is " + StackResizer.getCategoryStackSize(commandCategoryMapping.get(target)));
+		                        	}
+		                        	else if(StackResizer.getItemStackSize(target)!=-1) {
+	                            		logs.add("Stack size modifier for item " + target + " is " + StackResizer.getItemStackSize(targetArg) + ".");
+	                            	}	      
+		                        	else {
+		                        		logs.add("No modifiers found for item " + target + ".");
+		                        	}
 	                        	}
 	                            break;
 
@@ -161,6 +197,14 @@ public class SRCommandHandler {
 	                            if (amount == null) {
 	                                logs.add("Error: 'set' requires an amount.");
 	                            } else {
+	                            	
+	                            	if(target.equals("heldItem")) {
+		                        		target = getHeldItem(serverClient).item.getStringID();
+		                        	}
+		                        	else if(target.equals("heldCategory")) {		
+		                        		String[] tree = ItemCategory.getItemsCategory(getHeldItem(serverClient).item).getStringIDTree(false);
+		                        		target = tree[tree.length-1];
+		                        	}
 	                            	
 	                            	if(commandCategoryMapping.containsKey(target)){
 	                            		StackResizer.setCategoryStackSizeModifier(commandCategoryMapping.get(target), amount);
@@ -178,10 +222,17 @@ public class SRCommandHandler {
 
 	                        case "remove":
 	                        	
+	                        	if(target.equals("heldItem")) {
+	                        		target = getHeldItem(serverClient).item.getStringID();
+	                        	}
+	                        	else if(target.equals("heldCategory")) {		
+	                        		String[] tree = ItemCategory.getItemsCategory(getHeldItem(serverClient).item).getStringIDTree(false);
+	                        		target = tree[tree.length-1];
+	                        	}
+	                        	
 	                        	if(StackResizer.removeItemFromBlacklist(target)==-1) {
 	      	                    	ItemCategory test = itemCategoryFromLastChild(target);
-	      	                    	if(test!=null) {
-	      	                    		
+	      	                    	if(test!=null) {	      	                    		
 	      	                    		if(StackResizer.removeItemCategoryFromBlacklist(test)!=-1) {
 	      	                    			logs.add("Cleared category from blacklist.");
 	      	                    		}	                    		

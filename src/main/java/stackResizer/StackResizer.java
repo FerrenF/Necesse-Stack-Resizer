@@ -21,6 +21,7 @@ import java.util.zip.DataFormatException;
 
 import necesse.inventory.InventoryItem;
 import necesse.inventory.item.Item;
+import necesse.inventory.item.ItemAttackerWeaponItem;
 import necesse.inventory.item.ItemCategory;
 
 
@@ -153,22 +154,6 @@ public class StackResizer {
     
     public void registerCommands() {
     	
-      /*  CommandsManager.registerServerCommand(new GetBlacklistCommand());
-        CommandsManager.registerServerCommand(new AddBlacklistCommand());
-        CommandsManager.registerServerCommand(new AddAllBlacklistCommand());
-        CommandsManager.registerServerCommand(new RemoveBlacklistCommand());
-        CommandsManager.registerServerCommand(new SetStackSizeModifierCommand());
-        CommandsManager.registerServerCommand(new SetStackSizesCommand());
-        CommandsManager.registerServerCommand(new SetDefaultStackSizeModifierCommand());
-        CommandsManager.registerServerCommand(new SaveCommand());
-        CommandsManager.registerServerCommand(new RemoveStackSizeModifierCommand());
-        CommandsManager.registerServerCommand(new GetStackSizeModifierCommand());
-        CommandsManager.registerServerCommand(new StackSizeCommand());
-        CommandsManager.registerServerCommand(new InfoCommand());
-        CommandsManager.registerServerCommand(new ReloadCommand());
-        CommandsManager.registerServerCommand(new SetDebugStateCommand());
-        CommandsManager.registerServerCommand(new SetEnabledStateCommand());
-        CommandsManager.registerServerCommand(new TestExternalCommand());*/
     	SRCommandHandler.buildAutocompletes();
         CommandsManager.registerServerCommand(new SRCommandHandler.StackSizeCommand());
     }    
@@ -228,7 +213,7 @@ public class StackResizer {
     
     public static boolean isInBlacklist(Item item) {
     	    	
-    	if(item.getClass().equals(InventoryItem.class)) {
+    	if(item instanceof ItemAttackerWeaponItem) {
     		return true;
     	}
     	
@@ -248,7 +233,7 @@ public class StackResizer {
     			return true;
     		}
     	}    	    
-    	
+    
         return false;
     }
 
