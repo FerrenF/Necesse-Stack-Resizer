@@ -1,7 +1,7 @@
 # Necesse Stack Resizer Mod
 ![Preview](./preview.png)  
 
-## v0.3.6 Latest
+## v0.4.2 Latest
 
 Find a list of necesse classes [HERE](./necesseClasslist.txt)!
 
