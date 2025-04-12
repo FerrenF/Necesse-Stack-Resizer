@@ -32,7 +32,6 @@ public class StackResizer {
 	private static final Class<?>[] BASE_CLASS_BLACKLIST = {
 		    necesse.inventory.item.mountItem.MountItem.class,
 		    necesse.inventory.item.trinketItem.TrinketItem.class,
-		    necesse.inventory.item.mountItem.MountItem.class,
 		    necesse.inventory.item.trinketItem.BlinkScepterTrinketItem.class,
 		    necesse.inventory.item.trinketItem.CactusShieldTrinketItem.class,
 		    necesse.inventory.item.trinketItem.CalmingMinersBouquetTrinketItem.class,
@@ -49,7 +48,6 @@ public class StackResizer {
 		    necesse.inventory.item.trinketItem.ShieldTrinketItem.class,
 		    necesse.inventory.item.trinketItem.SimpleTrinketItem.class,
 		    necesse.inventory.item.trinketItem.SiphonShieldTrinketItem.class,
-		    necesse.inventory.item.trinketItem.TrinketItem.class,
 		    necesse.inventory.item.trinketItem.WindBootsTrinketItem.class,
 		    necesse.inventory.item.trinketItem.WoodShieldTrinketItem.class,
 		    necesse.inventory.item.trinketItem.ZephyrBootsTrinketItem.class,
@@ -152,8 +150,7 @@ public class StackResizer {
     	dbg_oops("Base blacklist items added.");
     }
     
-    public void registerCommands() {
-    	
+    public void registerCommands() {    	
     	SRCommandHandler.buildAutocompletes();
         CommandsManager.registerServerCommand(new SRCommandHandler.StackSizeCommand());
     }    
@@ -269,10 +266,12 @@ public class StackResizer {
     	return setClassStackSizeModifier(clzz, stackSize);      
     }
     
+    @Deprecated
     public static int removeClassStackSizeModifier(Class<?> clzz) {   
     	return getCurrentSettings().classModifiers.remove(clzz) != null ? 1 : -1;       
     }
     
+    @Deprecated
     public static int removeClassStackSizeModifier(String clazz) {
     	Class<?> clzz;
 		try {
@@ -299,56 +298,80 @@ public class StackResizer {
     	getCurrentSettings().default_stackSize_modifier = Math.abs(stackSize);
     }
     
+    public static boolean itemHasNoModifyField(Item item) {
+    	 try {
+             Field field = item.getClass().getDeclaredField("SR_NO_MODIFY");
+             if (field != null) {
+                 return true; 
+             }
+         } catch (NoSuchFieldException e) {}
+    	 return false;
+         
+    }
+	public static int itemGetModifyField(Item item) {
+		 try {
+	            Field modifyField = item.getClass().getDeclaredField("SR_MODIFY");
+	            if (Modifier.isStatic(modifyField.getModifiers()) && Modifier.isFinal(modifyField.getModifiers()) 
+	                && modifyField.getType() == int.class) {
+	                return modifyField.getInt(null); // Because the field SHOULD be static, we can use null as the parameter here.
+	            }
+	        } catch (NoSuchFieldException | IllegalAccessException e) {
+	            // Field not found or not accessible.
+	        }  
+		 return -1;
+    }	
+	public static int itemGetCustomStacksize(Item item) {
+		 if (getCurrentSettings().itemModifiers.containsKey(item.getStringID())) {
+	        	return getCurrentSettings().itemModifiers.get(item.getStringID()).intValue();
+	     } 
+		 return -1;
+    } 
+	
+	public static ItemCategory itemGetCategoryModifierCategory(Item item) {	
+		for (ItemCategory ic : getCurrentSettings().categoryModifiers.keySet()) {
+	        if(ic.containsItem(item)) return ic;
+        }  
+		return null;
+   } 
+	
+	public static int categoryGetCustomStacksize(Item item) {
+		 if (getCurrentSettings().itemModifiers.containsKey(item.getStringID())) {
+	        	return getCurrentSettings().itemModifiers.get(item.getStringID()).intValue();
+	     } 
+		 return -1;
+    } 
+	
     public static int getStackSizeModification(Item item, int currentStackSize) {     
     	
     	// Check if item class has a field named "SR_NO_MODIFY".
-        try {
-            Field field = item.getClass().getDeclaredField("SR_NO_MODIFY");
-            if (field != null) {
-                return currentStackSize; // Treat as blacklisted if it does.
-            }
-        } catch (NoSuchFieldException e) {
-        	// Do nothing.
-        }
+    	
+    	if(itemHasNoModifyField(item)) return currentStackSize;
         
         // Check if item class has a field named "SR_MODIFY" and use its value as the new stackSize if it exists.
-        try {
-            Field modifyField = item.getClass().getDeclaredField("SR_MODIFY");
-            if (Modifier.isStatic(modifyField.getModifiers()) && Modifier.isFinal(modifyField.getModifiers()) 
-                && modifyField.getType() == int.class) {
-                return modifyField.getInt(null); // Because the field SHOULD be static, we can use null as the parameter here.
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // Field not found or not accessible.
-        }        
-                
-        if (getCurrentSettings().itemModifiers.containsKey(item.getStringID())) {
-        	return getCurrentSettings().itemModifiers.get(item.getStringID()).intValue();
+    	int modifyFieldCheck = itemGetModifyField(item);
+    	if(modifyFieldCheck != -1) return modifyFieldCheck;
+    	    
+    	int customStacksizeCheck = itemGetCustomStacksize(item);
+        if (customStacksizeCheck != -1) {
+        	return customStacksizeCheck;
         }
         else {
         	
-        	for (Entry<ItemCategory, Integer> ic : getCurrentSettings().categoryModifiers.entrySet()) {
-		        if(ic.getKey().containsItem(item)) return ic.getValue();
-	        }   
-        	
-	        for (Class<?> clz : getCurrentSettings().classModifiers.keySet()) {
-		        	if(clz.isAssignableFrom(item.getClass())) {	        		
-		        		return getCurrentSettings().classModifiers.get(clz);	        	
-	        	}
-	        }   
-        
+        	ItemCategory itemCategoryModifierCheck = itemGetCategoryModifierCategory(item);
+        	if(itemCategoryModifierCheck != null) {
+        		return getCurrentSettings().categoryModifiers.get(itemCategoryModifierCheck);
+        	}
+        	        
 	        if (isInBlacklist(item)) {
 	            return currentStackSize;
 	        }     
-	        else
-	        {
-	        	 if (getCurrentSettings().modify_stackSize_enabled) {
-	                 currentStackSize = getCurrentSettings().default_stackSize_modifier;
-	             }
+	        
+	        if(getCurrentSettings().modify_stackSize_enabled){	        	
+	            return getCurrentSettings().default_stackSize_modifier;	             
 	        }
         }
         
-        return Math.abs(currentStackSize);
+        return 1;
     }
     
     public static int getItemStackSize(String target) {
@@ -464,24 +487,19 @@ public class StackResizer {
 		return currentSettings.categoryModifiers;
 	}
 
-	
-
-	
-
-	
-
-
-
-	
-	
-
-	
-
-
-	
-
-
-	
-
+	public static String getItemStackSizeStateString(Item th) {		
+		
+		if(StackResizer.itemHasNoModifyField(th) || StackResizer.itemGetModifyField(th) != -1) {
+			return "overridden";
+		} else if(StackResizer.itemGetCategoryModifierCategory(th) != null) {
+			return "category";
+		} else if(StackResizer.itemGetCustomStacksize(th) != -1) { 
+			return "item";
+		} else if(StackResizer.isInBlacklist(th)) {
+			return "blacklisted";
+		} else {
+			return "default";
+		}
+	}
  
 }

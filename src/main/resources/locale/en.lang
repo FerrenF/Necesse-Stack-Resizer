@@ -1,0 +1,3 @@
+[stackresizer]
+tooltip_stacksize=Stack Size: <value>
+tooltip_resized=Resized: <resize_state>

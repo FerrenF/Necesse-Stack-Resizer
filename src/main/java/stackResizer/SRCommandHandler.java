@@ -1,6 +1,5 @@
 package stackResizer;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,8 +18,8 @@ import necesse.engine.commands.parameterHandlers.IntParameterHandler;
 import necesse.engine.network.client.Client;
 import necesse.engine.network.server.Server;
 import necesse.engine.network.server.ServerClient;
+import necesse.gfx.GameColor;
 import necesse.inventory.InventoryItem;
-import necesse.inventory.item.Item;
 import necesse.inventory.item.ItemCategory;
 import necesse.inventory.item.ItemCategoryManager;
 public class SRCommandHandler {
@@ -93,6 +92,44 @@ public class SRCommandHandler {
 			});
 		}
 
+		public String getCurrentUsage(Client client, Server server, ServerClient serverClient, String[] args) {
+			
+			String action = args[0];
+			switch(action) {
+			
+				case "info":
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%starget%s] [%samount%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode(), GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
+							.replace(" [target] [amount]","")
+							+ " - §9Return information about Stack Resizer.";
+				case "get":
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%starget%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
+							.replace(" [target]", "")
+							+ " - §9Get an item or item category's current stack size. If target empty, get a list of all modifiers.";
+				case "set":
+					return super.getCurrentUsage(client, server, serverClient, args) + " - §9Set an item or item category's custom stack size.";
+				case "remove":
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%samount%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"") 
+							.replace(" [amount]","") 
+							+ " - §9Remove an item or item category from BOTH the blacklist and custom modification list.";
+				case "default":
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%starget%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
+							.replace(" [target]", "") 
+							+ " - §9Set the default stack size for all items. If value is empty, return the current default stack size.";
+				case "blacklist":
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%samount%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
+							.replace(" [amount]","")
+							+ " - §9Add an item or item category to the blacklist, and do not modify it.";
+				case "clear":
+					return "/stackresize clear - §9Clears all custom stack sizes and blacklists.";
+			}
+			return super.getCurrentUsage(client, server, serverClient, args);
+		}
+		
 		public void runModular(Client client, Server server, ServerClient serverClient, Object[] args, String[] errors,
 				CommandLog logs) {	
 			

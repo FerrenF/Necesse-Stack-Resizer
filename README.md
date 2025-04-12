@@ -18,7 +18,7 @@ This mod is inspired by the original **Increased Stack Size** mod by [@dianchia]
 - All settings are specific to individual worlds, stored at %APPDATA%/Necesse/cfg/mods
 
 ## Commands  
-Type /stackresize in-game to use commands. They are very simple.
+Type /stackresize in-game to use commands. They are very simple. As you type a command, more information will be displayed about it.
 
 ## External Mod Integration  
 There are three ways to interact with this mod from another mod:
@@ -110,6 +110,7 @@ You may add weapons and armor back into stackresize as a custom stack size, but 
 - Or, submit an issue here.
 
 ## History
+- 04-11-2025 - v0.5.2 Oops, missed a few patch notes. Added item tooltips specifying stack size and helpers for commands.
 - 03-16-2025 - v0.3.5 Added weapons and armor to base blacklist. Fixed issues with current settings persistence.
 - 03-12-2025 - v0.3.4 Refactoring. +Hopefully the last issue related to getting the world name. +Also changed the format of the get stacksize list and blacklist command to be more readable.
 - 03-03-2025 - v0.3.3 Fixed issue with clients crashing on the creation of a new world. :( 
