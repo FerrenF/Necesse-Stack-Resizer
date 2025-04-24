@@ -1,19 +1,18 @@
 # Necesse Stack Resizer Mod
 ![Preview](./preview.png)  
 
-## v0.4.2 Latest
-
-Find a list of necesse classes [HERE](./necesseClasslist.txt)!
+## v0.5.4 Latest - Necesse v.0.32.1
 
 ## Shoutout  
 This mod is inspired by the original **Increased Stack Size** mod by [@dianchia](https://github.com/dianchia). However, it aims to be a more robust implementation with expanded features and greater flexibility.  
 
 ## Features  
-- Set **custom default stack sizes**.  
-- Configure **individual stack sizes** for specific item names and engine item classes (e.g., `necesse.item.X`).  
-- Maintain an **item blacklist** and **class blacklist** to exclude specific items from being modified.  
-- Utilize a **comprehensive set of in-game commands** for managing stack sizes and blacklists.  
-- Provide **external mod support**, allowing other mods to modify the blacklist dynamically.  
+- Set **custom default stack sizes** for all items.  
+- Configure **individual stack sizes** for specific item names and item categories (e.g., `materials.ore`).  
+- Maintain an **item blacklist** and **category blacklist** to exclude specific items and item categories from being modified.  
+- Utilize a **comprehensive set of in-game commands** for managing stack sizes and blacklists.
+- Provide **external mod support**, allowing other mods to modify how StackResizer treats their items.
+- Provides **visual indicators** of modifications through in-game tooltips.
 - AutoSaves when the server does.
 - All settings are specific to individual worlds, stored at %APPDATA%/Necesse/cfg/mods
 
@@ -21,7 +20,7 @@ This mod is inspired by the original **Increased Stack Size** mod by [@dianchia]
 Type /stackresize in-game to use commands. They are very simple. As you type a command, more information will be displayed about it.
 
 ## External Mod Integration  
-There are three ways to interact with this mod from another mod:
+There are two ways to interact with this mod from another mod:
 	
 ### Static Class Fields
 
@@ -43,9 +42,11 @@ The path where this config file may differ on a unix server. In the root directo
 
 If the file is edited before Stack Resizer loads, then the changes will be loaded automatically. If the settings are edited after Stack Resizer loads it's settings (On server start event, after a world is selected and initialized), then you can use the CommandManager to use the in-game reload command to reload the contents of the settings file dynamically.
 
+### External Commands
+It's possible to send a command to the server from a java class. An example is contained (Although it's a tad out of date the principle is the same. It worked at the time!)
 	
 ## Base Blacklist
-Certain item classes are blacklisted by default to help mitigate issues. These classes include those that extend:
+Certain item **classes** are blacklisted by default to help mitigate issues. Not item categories, engine classes. They can not be removed, but can be overriden by customized settings. These classes include those that extend:
 
 - necesse.inventory.item.mountItem.MountItem.class,
 - necesse.inventory.item.trinketItem.TrinketItem.class,
