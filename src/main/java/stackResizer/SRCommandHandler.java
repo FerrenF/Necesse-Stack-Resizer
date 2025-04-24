@@ -36,7 +36,7 @@ public class SRCommandHandler {
 		for( ItemCategory ic : master.masterCategory.getChildren() ) {		
 			recurseChildren(ic);	
 		}		
-		actions.addAll(List.of("get","set","remove","blacklist","clear","default", "help", "info"));
+		actions.addAll(List.of("get","set","remove","blacklist","clear","default", "help", "info", "tooltips"));
 		autoCompletes.addAll(commandCategoryMapping.keySet());
 	
 	}
@@ -123,9 +123,19 @@ public class SRCommandHandler {
 					return super.getCurrentUsage(client, server, serverClient, args)
 							.replace(String.format(" [%samount%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
 							.replace(" [amount]","")
-							+ " - §9Add an item or item category to the blacklist, and do not modify it.";
+							+ " - §9Add an item or item category to the blacklist, and do not modify it. Leave empty to return current blacklist.";
+					
+				case "tooltips":
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%samount%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
+							.replace(" [amount]","")
+							+ " - §9 [true/false] Enable or disable the stacksize tooltips on all items.";
+					
 				case "clear":
-					return "/stackresize clear - §9Clears all custom stack sizes and blacklists.";
+					return super.getCurrentUsage(client, server, serverClient, args)
+							.replace(String.format(" [%starget%s] [%samount%s]", GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode(), GameColor.YELLOW.getColorCode(),GameColor.NO_COLOR.getColorCode()),"")
+							.replace(" [target] [amount]","")
+							+ " - §Clears all custom stack sizes and blacklisted items/categories.";
 			}
 			return super.getCurrentUsage(client, server, serverClient, args);
 		}
@@ -188,6 +198,25 @@ public class SRCommandHandler {
 	                    StackResizer.setDefaultStackSizeModifier(amt);
 	                    logs.add("Default stack size modifier set to: " + targetArg);
 	                
+	                    break;
+	                    
+	                case "tooltips":
+	                	
+	                	if(targetArg == null || targetArg.isEmpty()) {
+	                		logs.add("Argument must be 'true' or 'false'.");
+	                		break;
+	                	}
+	                	
+	                	logs.add("arg:" +targetArg);
+	                	boolean def = true;
+	                	try {
+	                		def = Boolean.parseBoolean(targetArg);
+	                	}catch(Exception e) {
+	                		 logs.add("Error: 'tooltips' argument must be 'true' or 'false'.");
+	                		 break;
+	                	}	                  
+	                    StackResizer.setAddTooltips(def);
+	                    logs.add("Stacksize tooltips are now " + (def ? "on." : "off."));	                
 	                    break;
 
 	                default:
@@ -294,15 +323,21 @@ public class SRCommandHandler {
 	                            break;
 
 	                        case "blacklist":
-	                        	
-	                        	if(commandCategoryMapping.containsKey((String)targetArg)){
-                            		StackResizer.addCategoryToBlacklist(commandCategoryMapping.get(target));
-                            		logs.add("Added category " + target + " to blacklist.");
-                            	}
-	                        	else if(StackResizer.addItemToBlacklist(target)!=-1){
-	                        		StackResizer.addItemToBlacklist(target);
-	                        		logs.add("Added " + target + " to blacklist.");
-	                        	}	                        
+	                        	if(target.isBlank() || target.isEmpty()) {
+	                        		
+	                        		logs.add("Category: " +String.join(",",StackResizer.categoryBlacklistItems()));
+	                        		logs.add("Item: " +String.join(",",StackResizer.itemBlacklistItems()));
+	                        	}
+	                        	else {
+		                        	if(commandCategoryMapping.containsKey((String)targetArg)){
+	                            		StackResizer.addCategoryToBlacklist(commandCategoryMapping.get(target));
+	                            		logs.add("Added category " + target + " to blacklist.");
+	                            	}
+		                        	else if(StackResizer.addItemToBlacklist(target)!=-1){
+		                        		StackResizer.addItemToBlacklist(target);
+		                        		logs.add("Added " + target + " to blacklist.");
+		                        	}	                        
+	                        	}
 	                          
 	                            break;
 

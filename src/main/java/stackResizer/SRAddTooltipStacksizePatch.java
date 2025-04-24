@@ -27,16 +27,18 @@ public class SRAddTooltipStacksizePatch {
 			    		@Advice.Argument(1) PlayerMob player,
 			    		@Advice.Argument(2) GameBlackboard blackboard,
 			    		@Advice.Return(readOnly = false) ListGameTooltips toolTipsList) {
-    
-    	toolTipsList.add(1, new SpacerGameTooltip(12));
     	
-    	toolTipsList.add(1, new FairTypeTooltip(new LocalMessageStringItemStatTip("stackresizer", "tooltip_resized", "resize_state", StackResizer.getItemStackSizeStateString(th))
-    			.toFairType((new FontOptions((int)(Settings.tooltipTextSize * 0.75))).outline(), Color.DARK_GRAY, Color.WHITE, Color.DARK_GRAY, false)));
-    	
-    	toolTipsList.add(1, new SpacerGameTooltip(1));
-    	
-    	toolTipsList.add(1, new FairTypeTooltip(new LocalMessageStringItemStatTip("stackresizer", "tooltip_stacksize", "value", String.valueOf(item.itemStackSize()))
-    			.toFairType((new FontOptions((int)(Settings.tooltipTextSize * 0.75))).outline(), Color.DARK_GRAY, Color.WHITE, Color.DARK_GRAY, false)));
+    	if(StackResizer.getAddTooltips()) {    
+	    	toolTipsList.add(1, new SpacerGameTooltip(12));
+	    	
+	    	toolTipsList.add(1, new FairTypeTooltip(new LocalMessageStringItemStatTip("stackresizer", "tooltip_resized", "resize_state", StackResizer.getItemStackSizeStateString(th))
+	    			.toFairType((new FontOptions((int)(Settings.tooltipTextSize * 0.75))).outline(), Color.DARK_GRAY, Color.WHITE, Color.DARK_GRAY, false)));
+	    	
+	    	toolTipsList.add(1, new SpacerGameTooltip(1));
+	    	
+	    	toolTipsList.add(1, new FairTypeTooltip(new LocalMessageStringItemStatTip("stackresizer", "tooltip_stacksize", "value", String.valueOf(item.itemStackSize()))
+	    			.toFairType((new FontOptions((int)(Settings.tooltipTextSize * 0.75))).outline(), Color.DARK_GRAY, Color.WHITE, Color.DARK_GRAY, false)));
+    	}
     		
     }
 }

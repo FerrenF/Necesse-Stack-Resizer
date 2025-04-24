@@ -22,33 +22,33 @@ public class SRSettings{
     	
 		public static boolean DEFAULT_DEBUG_STATE = false;
     	public Set<String> itemBlacklist;
-    	public Set<ItemCategory> itemCategoryBlacklist;
-    	public Set<Class<?>> classBlacklist;
-    	public Map<Class<?>, Integer> classModifiers;
+    	public Set<ItemCategory> categoryBlacklist;
+    	public Set<Class<?>> classBlacklist;    	
     	public Map<String, Integer> itemModifiers;
     	public Map<ItemCategory, Integer> categoryModifiers;
     	
     	public boolean debug_state;
     	public int default_stackSize_modifier;
     	public boolean modify_stackSize_enabled;
+        public boolean add_stacksize_tooltips;
         
         private String world_name;
         public static final int default_default_stackSize_modifier = 5000;
         public static final String SRModName = "Stack Resizer";
         
-        private SRSettings(String _world_name, Set<String> _itemBlacklist, Set<ItemCategory> _itemCategoryBlacklist, Set<Class<?>> _classBlacklist, Map<Class<?>, Integer> _classModifiers, Map<ItemCategory, Integer> _categoryModifiers, Map<String, Integer> _itemModifiers,
-        		int _default_stackSize_modifier, boolean _debug_state, boolean _modify_stackSize_enabled) {
+        private SRSettings(String _world_name, Set<String> _itemBlacklist, Set<ItemCategory> _itemCategoryBlacklist, Set<Class<?>> _classBlacklist, Map<ItemCategory, Integer> _categoryModifiers, Map<String, Integer> _itemModifiers, int _default_stackSize_modifier,
+        		boolean _debug_state, boolean _modify_stackSize_enabled, boolean _addStacksizeTooltips) {
         	
         	this.world_name = _world_name;
         	this.itemBlacklist = _itemBlacklist;
         	this.classBlacklist = _classBlacklist;
-        	this.itemCategoryBlacklist = _itemCategoryBlacklist;
-        	this.classModifiers = _classModifiers;
+        	this.categoryBlacklist = _itemCategoryBlacklist;
         	this.categoryModifiers = _categoryModifiers;
         	this.itemModifiers = _itemModifiers;
         	this.debug_state = _debug_state;
         	this.default_stackSize_modifier = _default_stackSize_modifier;
-        	this.modify_stackSize_enabled = _modify_stackSize_enabled;        
+        	this.modify_stackSize_enabled = _modify_stackSize_enabled;   
+        	this.add_stacksize_tooltips = _addStacksizeTooltips;
         	
         }
         
@@ -67,7 +67,6 @@ public class SRSettings{
             
             Map<String, Integer> n_itemModifiers = SRSettings.itemModifierListFromString(s.getSafeString("itemModifiers",""));
             Map<ItemCategory, Integer> n_categoryModifiers = SRSettings.categoryModifierListFromString(s.getSafeString("categoryModifiers",""));
-            Map<Class<?>, Integer> n_classModifiers = SRSettings.classModifierListFromString(s.getSafeString("classModifiers",""));
             Set<String> n_itemBlacklist = SRSettings.itemBlacklistFromString(s.getSafeString("itemBlacklist",""));
             Set<ItemCategory> n_categoryBlacklist = SRSettings.categoryBlacklistFromString(s.getSafeString("categoryBlacklist",""));
             Set<Class<?>> n_classBlacklist = SRSettings.classBlacklistFromString(s.getSafeString("classBlacklist",""));            
@@ -75,8 +74,9 @@ public class SRSettings{
             int n_defaultStackSize = s.getInt("defaultStackSize");
             boolean n_debug_state = s.getBoolean("debugState");
             boolean n_enabled_state = s.getBoolean("enabledState");
+            boolean add_tooltips = s.getBoolean("addTooltips", true);
             
-            return new SRSettings(_world_name, n_itemBlacklist, n_categoryBlacklist,  n_classBlacklist, n_classModifiers, n_categoryModifiers, n_itemModifiers, n_defaultStackSize, n_debug_state, n_enabled_state);
+            return new SRSettings(_world_name, n_itemBlacklist, n_categoryBlacklist,  n_classBlacklist, n_categoryModifiers, n_itemModifiers, n_defaultStackSize, n_debug_state, n_enabled_state, add_tooltips);
           
         }
         
@@ -104,7 +104,7 @@ public class SRSettings{
         }
         
         public static SRSettings getDefaultSettings(String world_name) {
-        	return new SRSettings(world_name, new HashSet<String>(), new HashSet<ItemCategory>(), new HashSet<Class<?>>(), new HashMap<Class<?>, Integer>(), new HashMap<ItemCategory, Integer>(),  new HashMap<String,Integer>(), default_default_stackSize_modifier, DEFAULT_DEBUG_STATE, true);
+        	return new SRSettings(world_name, new HashSet<String>(), new HashSet<ItemCategory>(), new HashSet<Class<?>>(), new HashMap<ItemCategory, Integer>(), new HashMap<String,Integer>(),  default_default_stackSize_modifier, DEFAULT_DEBUG_STATE, true, true);
         }
         
         public static SRSettings fromCurrentWorld(Client client) throws ClientNotInitializedException, WorldNotInitializedException, IOException, DataFormatException{        	
@@ -115,17 +115,18 @@ public class SRSettings{
                 
         // Save data only if the calling client is the server or the owner
         public void save() throws IOException {      	
+        	
             SaveData s = new SaveData(SRSettings.SRModName);            
-            s.addUnsafeString("itemModifiers", itemModifierListToString(this.itemModifiers));
-            s.addUnsafeString("classModifiers", classModifierListToString(this.classModifiers));            
+            s.addUnsafeString("itemModifiers", itemModifierListToString(this.itemModifiers));         
             s.addUnsafeString("categoryModifiers", categoryModifierListToString(this.categoryModifiers));
                 
             s.addUnsafeString("classBlacklist", classBlacklistToString(this.classBlacklist));
             s.addUnsafeString("itemBlacklist", itemBlacklistToString(this.itemBlacklist));
-            s.addUnsafeString("categoryBlacklist", categoryBlacklistToString(itemCategoryBlacklist));
+            s.addUnsafeString("categoryBlacklist", categoryBlacklistToString(categoryBlacklist));
             
             s.addInt("defaultStackSize", this.default_stackSize_modifier);
             
+            s.addBoolean("addTooltips", this.add_stacksize_tooltips);
             s.addBoolean("debugState", this.debug_state);
             s.addBoolean("enabledState", this.modify_stackSize_enabled);
             
@@ -170,9 +171,7 @@ public class SRSettings{
     		}
     	}
     	
-    	public static Map<Class<?>, Integer> classModifierListFromString(String str) {		
-    		return lambdaListFromString(str, (key)->{return helperClassForname(key);});    		
-        }
+    	
     	
     	public static <T> Set<T> lambdaBlacklistFromString(String source, Function<String, T> action){
 	    	Set<T> resultList = new HashSet<>();
@@ -235,17 +234,25 @@ public class SRSettings{
 			return lambdaToString(source,(entry)->{return entry.getKey();});
 		}
 	    
-		public static String classModifierListToString(Map<Class<?>, Integer> source) {
-			return lambdaToString(source,(entry)->{return entry.getKey().getName();});
-		}
+		
 		
 		public static String categoryModifierListToString(Map<ItemCategory, Integer> source) {
 			return lambdaToString(source,(entry)->{return (entry.getKey()).stringID;});
 		}
 		
+		
 		public static String categoryBlacklistToString(Set<ItemCategory> blacklist) {
 			return lambdaBlacklistToString(blacklist, (key)->{return ((ItemCategory)key).stringID;});
 		}
+		
+		public String categoryBlacklistToString() {
+			return categoryBlacklistToString(this.categoryBlacklist);
+		}
+		
+		public String categoryModifierListToString() {
+			return categoryModifierListToString(this.categoryModifiers);
+		}
+		
 		
 	    public static String getSavePath() {
 	    	String appDataCfgPath = GlobalData.cfgPath().replace('\\', '/');
@@ -275,23 +282,43 @@ public class SRSettings{
 		public void reloadSettings() throws IOException, DataFormatException {
 			SRSettings placeholder = SRSettings.fromWorldName(this.world_name);
 			this.classBlacklist = placeholder.classBlacklist;
-			this.classModifiers = placeholder.classModifiers;
 			this.itemBlacklist = placeholder.itemBlacklist;
 			this.classBlacklist = placeholder.classBlacklist;
 			this.categoryModifiers = placeholder.categoryModifiers;
-			this.itemCategoryBlacklist = placeholder.itemCategoryBlacklist;
+			this.categoryBlacklist = placeholder.categoryBlacklist;
 			this.debug_state = placeholder.debug_state;
 			this.modify_stackSize_enabled = placeholder.modify_stackSize_enabled;
 			this.default_stackSize_modifier = placeholder.default_stackSize_modifier;
-		}
-
-		public String classModifierListToString() {
-			return classModifierListToString(this.classModifiers);
 		}
 		
 		public String itemModifierListToString() {
 			return itemModifierListToString(this.itemModifiers);
 		}
+
+		public void setItemModifiersFromString(String in) {
+			this.itemModifiers = itemModifierListFromString(in);
+		}
+
+		public void setCategoryModifiersFromString(String in) {
+			this.categoryModifiers = categoryModifierListFromString(in);
+		}
+
+		public void setItemBlacklistFromString(String in) {
+			this.itemBlacklist = itemBlacklistFromString(in);
+			
+		}
+
+		public void setCategoryBlacklistFromString(String in) {
+			this.categoryBlacklist = categoryBlacklistFromString(in);
+		}
+
+		public void setDefaultModifier(int defaultMod) {
+			this.default_stackSize_modifier = defaultMod;
+			
+		}
+
+		
+
 		
     	
     }

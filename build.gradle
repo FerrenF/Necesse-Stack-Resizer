@@ -4,9 +4,9 @@ plugins {
 
 project.ext.modID = "stack.resizer" 
 project.ext.modName = "Stack Resizer" 
-project.ext.modVersion = "0.5.2"
-project.ext.gameVersion = "0.32.0" 
-project.ext.modDescription = "Stack resizer allows you to change the number of items in a stack, either across the board or granularly for each item and item class." 
+project.ext.modVersion = "0.5.4"
+project.ext.gameVersion = "0.32.1" 
+project.ext.modDescription = "Stack resizer allows you to change the number of items in a stack, either across the board or granularly for each item or category." 
 project.ext.author = "FerrenF"
 
 project.ext.clientside = false
