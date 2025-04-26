@@ -12,7 +12,7 @@ project.ext.author = "FerrenF"
 project.ext.clientside = false
 
 // The path to the games install directory
-def gameDirectory = "E:/SteamLibrary/steamapps/common/Necesse"
+def gameDirectory = "C:/Program Files (x86)/Steam/steamapps/common/Necesse"
 
 // =================================================
 // ========== DO NOT EDIT BELOW THIS LINE ==========
@@ -35,8 +35,6 @@ configurations {
     libDepends
 }
 
-sourceSets.main.output.resourcesDir = file("build/mod/resources/")
-sourceSets.main.java.outputDir = file("build/mod/")
 sourceSets.main.compileClasspath += configurations.libDepends // Adds libDepends configuration to classpath
 def buildLocation = "build/jar/"
 
@@ -74,7 +72,7 @@ task createModInfoFile(type: JavaExec) {
     classpath = files(gameDirectory + "/Necesse.jar")
 
     main = "CreateModInfoFile"
-    args "-file", "${sourceSets.main.java.outputDir}/mod.info",
+    args "-file", "${sourceSets.main.output.classesDirs.singleFile}/mod.info",
             "-id", "${project.ext.modID}",
             "-name", "${project.ext.modName}",
             "-version", "${project.ext.modVersion}",
@@ -136,10 +134,12 @@ task buildModJar(type: Jar) {
     }
 
     // Add mod output
-    from sourceSets.main.java.outputDir
+    from sourceSets.main.output
     // Add the dependencies
     from configurations.libDepends.collect { it.isDirectory() ? it : zipTree(it) }
 
-    archiveName "${jarName}.jar"
-    destinationDir file(buildLocation)
+    archiveFileName.set("${jarName}.jar")
+	destinationDirectory.set(file(buildLocation))
+	build.dependsOn buildModJar
+
 }
